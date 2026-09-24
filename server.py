@@ -10675,6 +10675,42 @@ def api_agent_analyze():
     return jsonify(data)
 
 
+@app.route('/api/agent-analysis/status', methods=['GET'])
+def api_agent_analysis_status():
+    """公开：前端轮询某新闻的 Agent 分析状态。
+
+    必须注册在 /api/agent-analysis/<news_id> 之前，否则 status 会被当作
+    news_id 捕获，导致前端收到 not found（404 语义错误）。
+    """
+    news_id = (request.args.get("news_id") or "").strip()
+    if not news_id:
+        return jsonify({"error": "缺少 news_id"}), 400
+    db = get_db()
+    rows = _fetchall(db, '''
+        SELECT viewpoint_id, content, status, created_at, updated_at, model, error
+        FROM agent_analyses WHERE news_id=? ORDER BY created_at DESC
+    ''', (news_id,))
+    out = []
+    for r in rows:
+        try:
+            content = json.loads(r["content"]) if r["content"] else None
+        except Exception:
+            content = {"summary": r["content"], "facts": [], "angles": [], "uncertainty": ""}
+        if isinstance(content, dict):
+            content = _agent_clean_analysis(content)
+        out.append({
+            "viewpoint_id": r["viewpoint_id"],
+            "viewpoint_name": (_AGENT_VIEWPOINT_MAP.get(r["viewpoint_id"]) or {}).get("name", ""),
+            "content": content,
+            "status": r["status"],
+            "created_at": r["created_at"],
+            "updated_at": r["updated_at"],
+            "model": r["model"],
+            "error": r["error"],
+        })
+    return jsonify({"news_id": news_id, "analyses": out})
+
+
 @app.route('/api/agent-analysis/<news_id>', methods=['GET'])
 def api_agent_get_analyses(news_id):
     """公开：查询某新闻已生成的全部 Agent 分析（前端进入详情页时回显缓存）。"""

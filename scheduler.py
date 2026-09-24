@@ -337,11 +337,13 @@ def refine_title(title, content=""):
 
 
 FETCH_TIMEOUT = 15                # 单源超时（秒）
-DEFAULT_INTERVAL_MIN = 10         # 默认轮询间隔（分钟），取值范围 5~15
+DEFAULT_INTERVAL_MIN = 12         # 默认轮询间隔（分钟），取值范围 5~15；错峰一轮约 12 分钟
 MIN_INTERVAL_MIN = 5
 MAX_INTERVAL_MIN = 15
 SCHEDULER_TICK = 30               # 调度循环心跳（秒）
 MAX_WORKERS = 6                   # 并发抓取线程数
+STAGGER_BATCHES = 6               # 一轮内源分片批次数（错峰抓取）
+STAGGER_BATCH_GAP_SEC = 120       # 每批启动间隔（秒），整轮约 6×2=12 分钟铺完
 PER_SOURCE_LIMIT = 15             # 单源单轮最多入库条数
 DEDUP_WINDOW_SEC = 24 * 3600      # 标题去重窗口：24 小时
 MAX_ARTICLE_AGE_SEC = 30 * 86400  # 早于 30 天的条目视为历史归档，不入库（保障"近30天"筛选有数据）
@@ -1281,24 +1283,33 @@ class FetchScheduler:
                 self.last_round_stats = stats
                 return stats
 
-            logger.info("开始抓取：本轮 %d 个源", len(targets))
-            with ThreadPoolExecutor(max_workers=MAX_WORKERS) as pool:
-                futures = {pool.submit(self.run_one, s): s for s in targets}
-                for fut in futures:
-                    src = futures[fut]
-                    try:
-                        ins, skip, fail, state = fut.result()
-                    except Exception as ex:
-                        ins = skip = fail = 0
-                        state = "failed"
-                        self.registry.record_result(src["id"], "failed", 0, str(ex)[:180])
-                    stats["inserted"] += ins
-                    stats["skipped"] += skip
-                    stats["failed"] += fail
-                    if state == "ok":
-                        stats["sources_ok"] += 1
-                    else:
-                        stats["sources_failed"] += 1
+            gap = 0 if force else STAGGER_BATCH_GAP_SEC
+            logger.info("开始抓取：本轮 %d 个源（分 %d 批错峰，批间隔 %ds）",
+                        len(targets), STAGGER_BATCHES, gap)
+            batch_size = max(1, -(-len(targets) // STAGGER_BATCHES))
+            for bi in range(0, len(targets), batch_size):
+                batch = targets[bi:bi + batch_size]
+                with ThreadPoolExecutor(max_workers=MAX_WORKERS) as pool:
+                    futures = {pool.submit(self.run_one, s): s for s in batch}
+                    for fut in futures:
+                        src = futures[fut]
+                        try:
+                            ins, skip, fail, state = fut.result()
+                        except Exception as ex:
+                            ins = skip = fail = 0
+                            state = "failed"
+                            self.registry.record_result(src["id"], "failed", 0, str(ex)[:180])
+                        stats["inserted"] += ins
+                        stats["skipped"] += skip
+                        stats["failed"] += fail
+                        if state == "ok":
+                            stats["sources_ok"] += 1
+                        else:
+                            stats["sources_failed"] += 1
+                # 非最后一批：错峰等待，避免各源同一时刻集中请求触发 429
+                if gap > 0 and bi + batch_size < len(targets):
+                    if self._stop.wait(gap):
+                        break
             stats["fetched"] = len(targets)
             stats["elapsed"] = round(time.time() - t0, 2)
             self.last_round_stats = stats
