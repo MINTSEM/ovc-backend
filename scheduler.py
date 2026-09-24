@@ -54,7 +54,8 @@ BASE_DIR = Path(__file__).resolve().parent  # 扁平化后位于项目根
 CONFIG_DIR = BASE_DIR                        # 扁平化后配置文件放根目录
 SOURCE_POOL_FILE = CONFIG_DIR / "source-pool.json"        # 归档源池（只读）
 SOURCES_FILE = CONFIG_DIR / "scheduler-sources.json"      # 运行期源注册表（可读写）
-BIRD_DB = BASE_DIR / "bird.db"
+# 与 server.py 保持同一数据库文件：优先 DATA_DIR 环境变量，未设置时回退项目根
+BIRD_DB = Path(os.environ.get('DATA_DIR', str(BASE_DIR))) / "bird.db"
 
 # ======================================================================
 # 新闻自动分类词典：按标题 + 段落内容关键词匹配前台标准分类
