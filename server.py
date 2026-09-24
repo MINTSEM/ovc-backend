@@ -15198,6 +15198,11 @@ def _team_upload_size_guard():
 #     职责：读取 source-pool.json 的直连源 -> 定时抓取 -> 去重写入 news 表
 #     挂载时机：必须早于 app.run()，否则后台线程不会启动
 # ==========================================================================
+# 数据库初始化必须放在模块顶层：Faable 用 gunicorn 以 import 方式加载应用，
+# 若 init_db() 仅放在 __main__ 块内，gunicorn 模式下不会执行，导致所有表缺失（API 500）
+init_db()
+print('[INIT] 数据库初始化完成:', DB_PATH if not _USE_PG else 'PostgreSQL')
+
 try:
     import scheduler as _pn_scheduler
     _pn_scheduler.bootstrap(app, admin_required, jsonify, request)
