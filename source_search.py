@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""翱翔鸟 peacenews 外部搜索层（source-search-adapter）
+"""东广视 ovcnews 外部搜索层（source-search-adapter）
 
 服务 AI 跨源检索与文本选中悬浮菜单（块一），与主新闻列表 source-pool/scheduler 完全隔离：
 绝不写入主列表抓取聚合。维基百科彻底排除。

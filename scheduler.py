@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-翱翔鸟 PeaceNews —— 一期 RSS 源池抓取调度模块
+东广视 OVCNews —— 一期 RSS 源池抓取调度模块
 ====================================================================
 
 职责
@@ -40,7 +40,7 @@ import requests
 import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-logger = logging.getLogger("peacenews.scheduler")
+logger = logging.getLogger("ovcnews.scheduler")
 if not logger.handlers:
     _h = logging.StreamHandler()
     _h.setFormatter(logging.Formatter("%(asctime)s [%(levelname)s] scheduler: %(message)s"))
@@ -54,7 +54,8 @@ BASE_DIR = Path(__file__).resolve().parent  # 扁平化后位于项目根
 CONFIG_DIR = BASE_DIR                        # 扁平化后配置文件放根目录
 SOURCE_POOL_FILE = CONFIG_DIR / "source-pool.json"        # 归档源池（只读）
 SOURCES_FILE = CONFIG_DIR / "scheduler-sources.json"      # 运行期源注册表（可读写）
-BIRD_DB = BASE_DIR / "bird.db"
+# 与 server.py 保持同一数据库文件：优先 DATA_DIR 环境变量，未设置时回退项目根
+BIRD_DB = Path(os.environ.get('DATA_DIR', str(BASE_DIR))) / "bird.db"
 
 # ======================================================================
 # 新闻自动分类词典：按标题 + 段落内容关键词匹配前台标准分类
@@ -336,11 +337,13 @@ def refine_title(title, content=""):
 
 
 FETCH_TIMEOUT = 15                # 单源超时（秒）
-DEFAULT_INTERVAL_MIN = 10         # 默认轮询间隔（分钟），取值范围 5~15
+DEFAULT_INTERVAL_MIN = 12         # 默认轮询间隔（分钟），取值范围 5~15；错峰一轮约 12 分钟
 MIN_INTERVAL_MIN = 5
 MAX_INTERVAL_MIN = 15
 SCHEDULER_TICK = 30               # 调度循环心跳（秒）
 MAX_WORKERS = 6                   # 并发抓取线程数
+STAGGER_BATCHES = 6               # 一轮内源分片批次数（错峰抓取）
+STAGGER_BATCH_GAP_SEC = 120       # 每批启动间隔（秒），整轮约 6×2=12 分钟铺完
 PER_SOURCE_LIMIT = 15             # 单源单轮最多入库条数
 DEDUP_WINDOW_SEC = 24 * 3600      # 标题去重窗口：24 小时
 MAX_ARTICLE_AGE_SEC = 30 * 86400  # 早于 30 天的条目视为历史归档，不入库（保障"近30天"筛选有数据）
@@ -1280,24 +1283,33 @@ class FetchScheduler:
                 self.last_round_stats = stats
                 return stats
 
-            logger.info("开始抓取：本轮 %d 个源", len(targets))
-            with ThreadPoolExecutor(max_workers=MAX_WORKERS) as pool:
-                futures = {pool.submit(self.run_one, s): s for s in targets}
-                for fut in futures:
-                    src = futures[fut]
-                    try:
-                        ins, skip, fail, state = fut.result()
-                    except Exception as ex:
-                        ins = skip = fail = 0
-                        state = "failed"
-                        self.registry.record_result(src["id"], "failed", 0, str(ex)[:180])
-                    stats["inserted"] += ins
-                    stats["skipped"] += skip
-                    stats["failed"] += fail
-                    if state == "ok":
-                        stats["sources_ok"] += 1
-                    else:
-                        stats["sources_failed"] += 1
+            gap = 0 if force else STAGGER_BATCH_GAP_SEC
+            logger.info("开始抓取：本轮 %d 个源（分 %d 批错峰，批间隔 %ds）",
+                        len(targets), STAGGER_BATCHES, gap)
+            batch_size = max(1, -(-len(targets) // STAGGER_BATCHES))
+            for bi in range(0, len(targets), batch_size):
+                batch = targets[bi:bi + batch_size]
+                with ThreadPoolExecutor(max_workers=MAX_WORKERS) as pool:
+                    futures = {pool.submit(self.run_one, s): s for s in batch}
+                    for fut in futures:
+                        src = futures[fut]
+                        try:
+                            ins, skip, fail, state = fut.result()
+                        except Exception as ex:
+                            ins = skip = fail = 0
+                            state = "failed"
+                            self.registry.record_result(src["id"], "failed", 0, str(ex)[:180])
+                        stats["inserted"] += ins
+                        stats["skipped"] += skip
+                        stats["failed"] += fail
+                        if state == "ok":
+                            stats["sources_ok"] += 1
+                        else:
+                            stats["sources_failed"] += 1
+                # 非最后一批：错峰等待，避免各源同一时刻集中请求触发 429
+                if gap > 0 and bi + batch_size < len(targets):
+                    if self._stop.wait(gap):
+                        break
             stats["fetched"] = len(targets)
             stats["elapsed"] = round(time.time() - t0, 2)
             self.last_round_stats = stats
@@ -1335,7 +1347,7 @@ class FetchScheduler:
         if self._thread and self._thread.is_alive():
             return self
         self._stop.clear()
-        self._thread = threading.Thread(target=self._loop, name="peacenews-scheduler", daemon=True)
+        self._thread = threading.Thread(target=self._loop, name="ovcnews-scheduler", daemon=True)
         self._thread.start()
         return self
 

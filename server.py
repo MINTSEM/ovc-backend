@@ -1,4 +1,4 @@
-"""SoaringBird 论坛 - Flask 后端 + SQLite/PostgreSQL"""
+"""OVC 论坛 - Flask 后端 + SQLite/PostgreSQL"""
 
 import os
 import re
@@ -121,8 +121,8 @@ def _record_register_attempt(ip):
 
 # 允许的跨域来源（仅限本站域名，防止 SocketIO 被任意站点滥用）
 _ALLOWED_ORIGINS = [
-    'https://soaringbirdforum.xyz',
-    'https://www.soaringbirdforum.xyz',
+    'https://ovc.local',
+    'https://www.ovc.local',
     'http://localhost:8080',
     'http://127.0.0.1:8080',
 ]
@@ -207,15 +207,15 @@ def _get_auth_user_id():
 HS_OAUTH_BASE = os.environ.get('HS_OAUTH_BASE', 'https://hmediapost.newblock.online')
 HS_OAUTH_APP_ID = os.environ.get('HS_OAUTH_APP_ID', '')
 HS_OAUTH_APP_SECRET = os.environ.get('HS_OAUTH_APP_SECRET', '')
-HS_OAUTH_REDIRECT_URI = os.environ.get('HS_OAUTH_REDIRECT_URI', 'https://soaringbirdforum.xyz/api/auth/huanshuang/callback')
+HS_OAUTH_REDIRECT_URI = os.environ.get('HS_OAUTH_REDIRECT_URI', 'https://ovc.local/api/auth/huanshuang/callback')
 
 # ===== 本地 AI（LM Studio）配置 =====
 AI_BASE_URL = os.environ.get('AI_BASE_URL', 'http://localhost:1234/v1')
 AI_MODEL = os.environ.get('AI_MODEL', 'local-model')
 AI_API_KEY = os.environ.get('AI_API_KEY', '')
 AI_BOT_ID = 'ai_bot'
-AI_BOT_NAME = 'AI Bird'
-AI_SYSTEM_PROMPT = os.environ.get('AI_SYSTEM_PROMPT', '你是翱翔鸟论坛的AI助手AI Bird。用户在论坛帖子中@你来提问，请简洁友好地回答。使用Markdown格式。')
+AI_BOT_NAME = '东風AI'
+AI_SYSTEM_PROMPT = os.environ.get('AI_SYSTEM_PROMPT', '你是东广视论坛的AI助手东風AI。用户在论坛帖子中@你来提问，请简洁友好地回答。使用Markdown格式。')
 
 # AI 并发控制：最多同时处理 2 个请求
 import threading as _ai_threading
@@ -570,7 +570,7 @@ CATEGORIES = [
 ]
 
 # 管理员账号（首次启动自动创建）
-ADMIN_USERNAME = os.environ.get('ADMIN_USERNAME', 'SoaringBird')
+ADMIN_USERNAME = os.environ.get('ADMIN_USERNAME', 'OVC')
 ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', secrets.token_urlsafe(16))
 
 
@@ -827,7 +827,7 @@ def _init_db_pg():
             FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE CASCADE
         )
     ''')
-    # ===== PeaceNews 新闻模块 =====
+    # ===== OVCNews 新闻模块 =====
     cur.execute('''
         CREATE TABLE IF NOT EXISTS news (
             id TEXT PRIMARY KEY,
@@ -2092,8 +2092,8 @@ def _check_nsfw(file_data, threshold=0.45):
 
 
 # ===== WebAuthn / Passkeys =====
-WEBAUTHN_RP_NAME = 'SoaringBird 论坛'
-WEBAUTHN_RP_ID = 'soaringbirdforum.xyz'  # 固定 RP ID，不信任前端传递的值
+WEBAUTHN_RP_NAME = 'OVC 论坛'
+WEBAUTHN_RP_ID = 'ovc.local'  # 固定 RP ID，不信任前端传递的值
 
 
 def _get_rp_id(browser_hostname=None):
@@ -2272,9 +2272,9 @@ _TR_BATCH_MAX = 1400  # 单次翻译请求最大字符数（MyMemory 上限约 5
 
 # MyMemory 多邮箱轮换：每个邮箱 ≈5 万字符/天免费额度，3 个轮用 ≈15 万/天
 _TR_MM_EMAILS = [
-    'translate@soaringbirdforum.xyz',
-    'forum-bird@soaringbirdforum.xyz',
-    'bird-ai@soaringbirdforum.xyz',
+    'translate@ovc.local',
+    'forum-bird@ovc.local',
+    'bird-ai@ovc.local',
 ]
 import itertools as _tr_itertools
 _tr_mm_cycle = _tr_itertools.cycle(_TR_MM_EMAILS)
@@ -2349,7 +2349,7 @@ def _azure_translate_one(line_text, target):
         'Ocp-Apim-Subscription-Key': AZURE_TRANSLATOR_KEY,
         'Ocp-Apim-Subscription-Region': AZURE_TRANSLATOR_REGION,
         'Content-Type': 'application/json',
-        'User-Agent': 'SoaringBirdForum/1.0',
+        'User-Agent': 'OVCForum/1.0',
     })
     try:
         with urllib.request.urlopen(req, timeout=15) as resp:
@@ -2380,7 +2380,7 @@ def _tr_mymemory_one(line_text, target):
             'de': _tr_next_email(),
         })
         url = 'https://api.mymemory.translated.net/get?' + params
-        req = urllib.request.Request(url, headers={'User-Agent': 'SoaringBirdForum/1.0'})
+        req = urllib.request.Request(url, headers={'User-Agent': 'OVCForum/1.0'})
         try:
             with urllib.request.urlopen(req, timeout=8 if attempt == 0 else 12) as resp:
                 data = json.loads(resp.read().decode('utf-8'))
@@ -2698,7 +2698,7 @@ def api_translate():
 @app.route('/')
 def index():
     # 项目内没有 index.html，根路径直接给新闻中心（旧链接 /?id=xxx 也能落到本站而非 404）
-    return send_from_directory(_FRONTEND_DIR, 'peacenews.html')
+    return send_from_directory(_FRONTEND_DIR, 'ovcnews.html')
 
 
 @app.route('/ai')
@@ -2711,7 +2711,7 @@ def ai_page():
 @app.route('/search')
 @app.route('/search/')
 def search_page():
-    """翱翔鸟 search experience."""
+    """东广视 search experience."""
     return send_from_directory(_FRONTEND_DIR, 'search.html')
 
 
@@ -2809,7 +2809,7 @@ def api_text_analysis():
     }
 
     sys_prompt = (
-        "你是翱翔鸟新闻平台的文本分析助手。只输出 markdown 正文，禁止输出思考过程或多余说明。\n"
+        "你是东广视新闻平台的文本分析助手。只输出 markdown 正文，禁止输出思考过程或多余说明。\n"
         + mode_prompts[mode]
     )
     user_parts = [
@@ -2847,22 +2847,22 @@ def admin_page():
 @app.route('/signin')
 @app.route('/signin/')
 def signin_page():
-    """翱翔鸟登录页面"""
+    """东广视登录页面"""
     return send_from_directory(_FRONTEND_DIR, 'signin.html')
 
 
-@app.route('/peacenews')
-@app.route('/peacenews/')
-def peacenews_page():
-    """PeaceNews 新闻页面"""
-    return send_from_directory(_FRONTEND_DIR, 'peacenews.html')
+@app.route('/ovcnews')
+@app.route('/ovcnews/')
+def ovcnews_page():
+    """OVCNews 新闻页面"""
+    return send_from_directory(_FRONTEND_DIR, 'ovcnews.html')
 
 
-@app.route('/peacenews/admin')
-@app.route('/peacenews/admin/')
-def peacenews_admin_page():
-    """PeaceNews 管理页面（页面内做权限校验）"""
-    return send_from_directory(_FRONTEND_DIR, 'peacenews-admin.html')
+@app.route('/ovcnews/admin')
+@app.route('/ovcnews/admin/')
+def ovcnews_admin_page():
+    """OVCNews 管理页面（页面内做权限校验）"""
+    return send_from_directory(_FRONTEND_DIR, 'ovcnews-admin.html')
 
 
 @app.route('/download')
@@ -2873,21 +2873,21 @@ def download_page():
 @app.route('/apps')
 @app.route('/apps/')
 def apps_page():
-    """翱翔鸟 App 页面（App Store 风格，提供 iOS / Android 客户端下载）"""
+    """东广视 App 页面（App Store 风格，提供 iOS / Android 客户端下载）"""
     return send_from_directory(_FRONTEND_DIR, 'apps.html')
 
 
 @app.route('/apps/ios')
 @app.route('/apps/ios/')
 def apps_ios_page():
-    """翱翔鸟 for iOS 应用详情页"""
+    """东广视 for iOS 应用详情页"""
     return send_from_directory(_FRONTEND_DIR, 'apps-ios.html')
 
 
 @app.route('/apps/android')
 @app.route('/apps/android/')
 def apps_android_page():
-    """翱翔鸟 for Android 应用详情页"""
+    """东广视 for Android 应用详情页"""
     return send_from_directory(_FRONTEND_DIR, 'apps-android.html')
 
 
@@ -3112,7 +3112,7 @@ def api_huanshuang_oauth_callback():
                     ext = 'webp'
                 filename = f"{uuid.uuid4().hex}.{ext}"
                 avatar_path = f"uploads/avatars/{filename}"
-                req = urllib.request.Request(avatar, headers={'User-Agent': 'SoaringBirdForum/1.0'})
+                req = urllib.request.Request(avatar, headers={'User-Agent': 'OVCForum/1.0'})
                 image_data = urllib.request.urlopen(req, timeout=10).read()
                 # DNS 重绑定防护：连接后再次解析，确认 IP 未变化
                 _socket.getaddrinfo(host, None)
@@ -3167,7 +3167,7 @@ def api_huanshuang_oauth_callback():
 import threading
 
 def _detect_ai_mention(content):
-    """检测内容中是否 @AI / @ai / @AI助手 / @AI Bird"""
+    """检测内容中是否 @AI / @ai / @AI助手 / @东風AI"""
     import re
     pattern = r'@(?:AI|ai|Ai|aI|AI助手|ai助手|AI\s*Bird|ai\s*bird)'
     return bool(re.search(pattern, content))
@@ -3507,8 +3507,8 @@ def _is_form_request():
 
 # ===== 邮箱验证码（Resend API）=====
 RESEND_API_KEY = os.environ.get('RESEND_API_KEY', '')
-RESEND_FROM = os.environ.get('RESEND_FROM', 'noreply@soaringbirdforum.xyz')
-RESEND_FROM_NAME = os.environ.get('RESEND_FROM_NAME', '翱翔鸟论坛')
+RESEND_FROM = os.environ.get('RESEND_FROM', 'noreply@ovc.local')
+RESEND_FROM_NAME = os.environ.get('RESEND_FROM_NAME', '东广视论坛')
 
 # Cloudflare Turnstile 人机验证
 TURNSTILE_SITE_KEY = os.environ.get('TURNSTILE_SITE_KEY', '')  # 留空则跳过验证
@@ -3584,7 +3584,7 @@ def _send_email(to_addr, subject, body, code=None):
         f'<p style="color:#1d1d1f;font-size:15px;line-height:1.5;margin:0 0 16px">{safe_body}</p>'
         f'{code_block}'
         '</div>'
-        '<p style="color:#aeaeb2;font-size:11px;line-height:1.5;margin-top:20px;text-align:center">© 2026 SoaringBird. 此邮件由系统自动发送，请勿回复。</p>'
+        '<p style="color:#aeaeb2;font-size:11px;line-height:1.5;margin-top:20px;text-align:center">© 2026 OVC. 此邮件由系统自动发送，请勿回复。</p>'
         '</div>'
     )
     payload = json.dumps({
@@ -3600,7 +3600,7 @@ def _send_email(to_addr, subject, body, code=None):
         headers={
             'Authorization': f'Bearer {RESEND_API_KEY}',
             'Content-Type': 'application/json',
-            'User-Agent': 'SoaringBirdForum/1.0',
+            'User-Agent': 'OVCForum/1.0',
             'Accept': 'application/json',
         },
         method='POST',
@@ -3649,13 +3649,13 @@ def api_send_verify_code():
         _email_codes[email] = {'code': code, 'expires': now + _EMAIL_CODE_TTL, 'sent_at': now}
 
     try:
-        subject = '验证翱翔鸟账户电子邮件地址'
+        subject = '验证东广视账户电子邮件地址'
         body = (
-            f'你已选择此电子邮件地址作为你的翱翔鸟账户。为验证此电子邮件地址属于你，请在注册页面输入下方验证码：\n\n'
+            f'你已选择此电子邮件地址作为你的东广视账户。为验证此电子邮件地址属于你，请在注册页面输入下方验证码：\n\n'
             f'此验证码 10 分钟内有效。\n\n'
             f'你收到此电子邮件的原因：\n'
-            f'翱翔鸟会在你注册账户时提出验证要求。你的翱翔鸟账户需经过验证才能使用。\n\n'
-            f'如果你未提出此请求，可以忽略此电子邮件。未经过验证便无法创建翱翔鸟账户。'
+            f'东广视会在你注册账户时提出验证要求。你的东广视账户需经过验证才能使用。\n\n'
+            f'如果你未提出此请求，可以忽略此电子邮件。未经过验证便无法创建东广视账户。'
         )
         _send_email(email, subject, body, code=code)
     except Exception as e:
@@ -3702,9 +3702,9 @@ def api_send_reset_code():
         _email_codes[email] = {'code': code, 'expires': now + _EMAIL_CODE_TTL, 'sent_at': now}
 
     try:
-        subject = '重置翱翔鸟账户密码'
+        subject = '重置东广视账户密码'
         body = (
-            f'你已请求重置翱翔鸟账户密码。请在重置密码页面输入下方验证码：\n\n'
+            f'你已请求重置东广视账户密码。请在重置密码页面输入下方验证码：\n\n'
             f'验证码：{code}\n\n'
             f'此验证码 10 分钟内有效。\n\n'
             f'如果你未提出此请求，可以忽略此电子邮件。'
@@ -7526,7 +7526,7 @@ def oauth_authorize_get():
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>使用翱翔鸟账户登录 - {e_app_name}</title>
+<title>使用东广视账户登录 - {e_app_name}</title>
 <style>
 * {{ margin: 0; padding: 0; box-sizing: border-box; }}
 :root {{
@@ -7586,7 +7586,7 @@ body {{
     margin: 0 20px;
 }}
 
-/* ===== 信息栏：左 翱翔鸟账户 / 右 用户名，靠边对齐 ===== */
+/* ===== 信息栏：左 东广视账户 / 右 用户名，靠边对齐 ===== */
 .info-bar {{
     display: flex; align-items: center; justify-content: space-between;
     padding: 14px 20px;
@@ -7716,13 +7716,13 @@ body {{
 <body>
 
 <div class="top-logo">
-    <img id="topLogo" src="/logo-light.png" alt="SoaringBird">
+    <img id="topLogo" src="/logo-light.png" alt="OVC">
 </div>
 
 <div class="divider"></div>
 
 <div class="info-bar">
-    <div class="info-bar-left">翱翔鸟账户</div>
+    <div class="info-bar-left">东广视账户</div>
     <div class="info-bar-right">{user_first_name}</div>
 </div>
 
@@ -7730,9 +7730,9 @@ body {{
 
 <main class="main">
     <div class="center-logo">
-        <img id="centerLogo" src="/logo-light.png" alt="SoaringBird">
+        <img id="centerLogo" src="/logo-light.png" alt="OVC">
     </div>
-    <p class="prompt">要继续通过 <span class="prompt-account">SoaringBird 账户 ({user_first_name})</span> 使用 <span class="prompt-app">“{e_app_name}”</span> 吗？</p>
+    <p class="prompt">要继续通过 <span class="prompt-account">OVC 账户 ({user_first_name})</span> 使用 <span class="prompt-app">“{e_app_name}”</span> 吗？</p>
     <p class="prompt-sub">该应用将获取您的用户名和头像等基本信息</p>
     <div class="btn-group">
         <form method="POST" action="/oauth/authorize" style="flex:1">
@@ -7756,7 +7756,7 @@ body {{
 </main>
 
 <footer class="footer">
-    Copyright &copy; 2026 SoaringBird. 保留所有权利。
+    Copyright &copy; 2026 OVC. 保留所有权利。
 </footer>
 
 <script>
@@ -8066,12 +8066,12 @@ def developer_page():
 
 
 # ===== 应用更新 API =====
-# APK 文件存放于 static/app/soaringbird-latest.apk
+# APK 文件存放于 static/app/ovc-latest.apk
 # 通过通配静态路由 /<path:path> 自动提供下载
 # 更新步骤：将新版 APK 放入 static/app/ 目录，修改下方版本号和 changelog
 APP_LATEST_VERSION = '3.0-RC'
 APP_LATEST_VERSION_CODE = 30
-APP_LATEST_CHANGELOG = '翱翔鸟 3.0 RC：全新扁平化 iOS 18 风格界面，发帖、阅读、直播三大能力，苹果式渐变配色与交互动效，适配 Android 全面屏'
+APP_LATEST_CHANGELOG = '东广视 3.0 RC：全新扁平化 iOS 18 风格界面，发帖、阅读、直播三大能力，苹果式渐变配色与交互动效，适配 Android 全面屏'
 APP_FORCE_UPDATE = False
 
 
@@ -8082,7 +8082,7 @@ def api_app_latest_version():
     包含 APK 文件的 size 和 sha256，客户端下载后可校验完整性，
     避免因 CDN 缓存导致下载到旧版本 APK。
     """
-    apk_path = os.path.join(os.path.dirname(__file__), 'static', 'app', 'soaringbird-latest.apk')
+    apk_path = os.path.join(os.path.dirname(__file__), 'static', 'app', 'ovc-latest.apk')
     apk_size = 0
     apk_sha256 = ''
     try:
@@ -8098,7 +8098,7 @@ def api_app_latest_version():
     return jsonify({
         'version': APP_LATEST_VERSION,
         'versionCode': APP_LATEST_VERSION_CODE,
-        'downloadUrl': '/static/app/soaringbird-latest.apk',
+        'downloadUrl': '/static/app/ovc-latest.apk',
         'changelog': APP_LATEST_CHANGELOG,
         'forceUpdate': APP_FORCE_UPDATE,
         'size': apk_size,
@@ -8175,14 +8175,14 @@ def api_download_apk():
     _download_tokens.pop(token, None)
 
     # 返回 APK 文件
-    apk_path = os.path.join(os.path.dirname(__file__), 'static', 'app', 'soaringbird-latest.apk')
+    apk_path = os.path.join(os.path.dirname(__file__), 'static', 'app', 'ovc-latest.apk')
     if not os.path.exists(apk_path):
         return jsonify({'error': 'APK 文件不存在'}), 404
 
     return send_from_directory(os.path.dirname(apk_path), os.path.basename(apk_path), as_attachment=True)
 
 
-# ===== PeaceNews 新闻模块 API =====
+# ===== OVCNews 新闻模块 API =====
 # 评论速率限制（每用户 10 分钟最多 10 条，进程内存实现，与登录/注册限流同模式）
 _news_comment_attempts = {}  # {user_id: [timestamp, ...]}
 _news_comment_lock = _threading.Lock()
@@ -9255,7 +9255,7 @@ def api_news_image_proxy():
         'User-Agent': ('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
                        '(KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36'),
         'Accept': 'image/avif,image/webp,image/apng,image/*,*/*;q=0.8',
-        'Referer': 'https://peacenews.local/',
+        'Referer': 'https://ovcnews.local/',
     })
     try:
         with _ur.urlopen(req, timeout=10) as resp:
@@ -10131,7 +10131,7 @@ def _agent_build_system_prompt(viewpoint):
     attention = "、".join(viewpoint.get("attention") or viewpoint.get("dimensions") or [])
     method = viewpoint.get("method") or ""
     return (
-        "你是翱翔鸟新闻平台的「%s」智能体。\n"
+        "你是东广视新闻平台的「%s」智能体。\n"
         "立场定位：%s\n"
         "关注侧重：%s\n"
         "理论方法：%s\n"
@@ -10673,6 +10673,42 @@ def api_agent_analyze():
         return jsonify({"error": "AI 分析失败：%s" % str(e)}), 502
     data["from_cache"] = from_cache
     return jsonify(data)
+
+
+@app.route('/api/agent-analysis/status', methods=['GET'])
+def api_agent_analysis_status():
+    """公开：前端轮询某新闻的 Agent 分析状态。
+
+    必须注册在 /api/agent-analysis/<news_id> 之前，否则 status 会被当作
+    news_id 捕获，导致前端收到 not found（404 语义错误）。
+    """
+    news_id = (request.args.get("news_id") or "").strip()
+    if not news_id:
+        return jsonify({"error": "缺少 news_id"}), 400
+    db = get_db()
+    rows = _fetchall(db, '''
+        SELECT viewpoint_id, content, status, created_at, updated_at, model, error
+        FROM agent_analyses WHERE news_id=? ORDER BY created_at DESC
+    ''', (news_id,))
+    out = []
+    for r in rows:
+        try:
+            content = json.loads(r["content"]) if r["content"] else None
+        except Exception:
+            content = {"summary": r["content"], "facts": [], "angles": [], "uncertainty": ""}
+        if isinstance(content, dict):
+            content = _agent_clean_analysis(content)
+        out.append({
+            "viewpoint_id": r["viewpoint_id"],
+            "viewpoint_name": (_AGENT_VIEWPOINT_MAP.get(r["viewpoint_id"]) or {}).get("name", ""),
+            "content": content,
+            "status": r["status"],
+            "created_at": r["created_at"],
+            "updated_at": r["updated_at"],
+            "model": r["model"],
+            "error": r["error"],
+        })
+    return jsonify({"news_id": news_id, "analyses": out})
 
 
 @app.route('/api/agent-analysis/<news_id>', methods=['GET'])
@@ -12627,7 +12663,7 @@ def api_podcast_delete(podcast_id):
 
 
 # =====================================================================================
-# ===== 翱翔鸟 Team 团队协同（/team）=====
+# ===== 东广视 Team 团队协同（/team）=====
 # 三层权限：身份层（白名单 + 二次验证）→ 角色层（四级）→ 密级层（四档）
 # 非员工访问一律 404（不返回 403，不暴露功能存在）
 # =====================================================================================
@@ -12893,7 +12929,7 @@ def _init_db_team():
 # ===== 服务端加密存盘（AES-256-GCM，分块）=====
 def _team_key():
     """派生 32 字节加密密钥，优先使用 TEAM_SECRET"""
-    raw = os.environ.get('TEAM_SECRET') or (app.secret_key + '|soaringbird-team-v1')
+    raw = os.environ.get('TEAM_SECRET') or (app.secret_key + '|ovc-team-v1')
     return hashlib.sha256(raw.encode('utf-8')).digest()
 
 
@@ -13243,7 +13279,7 @@ def api_team_send_code():
         code = f'{secrets.randbelow(1000000):06d}'
         _team_codes[uid] = {'code': code, 'expires': now + TEAM_CODE_TTL, 'sent_at': now, 'tries': 0}
     try:
-        _send_email(ident['email'], '翱翔鸟 Team 访问验证', '你正在访问翱翔鸟 Team 团队协同空间。请输入以下验证码完成验证，验证码 10 分钟内有效。', code=code)
+        _send_email(ident['email'], '东广视 Team 访问验证', '你正在访问东广视 Team 团队协同空间。请输入以下验证码完成验证，验证码 10 分钟内有效。', code=code)
     except Exception as e:
         return jsonify({'error': f'验证码发送失败：{e}'}), 500
     _team_log('send_code', detail='二次验证码已发送', uid=uid)
@@ -15198,6 +15234,11 @@ def _team_upload_size_guard():
 #     职责：读取 source-pool.json 的直连源 -> 定时抓取 -> 去重写入 news 表
 #     挂载时机：必须早于 app.run()，否则后台线程不会启动
 # ==========================================================================
+# 数据库初始化必须放在模块顶层：Faable 用 gunicorn 以 import 方式加载应用，
+# 若 init_db() 仅放在 __main__ 块内，gunicorn 模式下不会执行，导致所有表缺失（API 500）
+init_db()
+print('[INIT] 数据库初始化完成:', DB_PATH if not _USE_PG else 'PostgreSQL')
+
 try:
     import scheduler as _pn_scheduler
     _pn_scheduler.bootstrap(app, admin_required, jsonify, request)
@@ -15223,7 +15264,7 @@ if __name__ == '__main__':
     # 启动 AI 审核定期巡查线程：每 5 小时扫描一次（需管理后台开启 moderation_enabled）
     _ai_thread = threading.Thread(target=_ai_moderation_loop, daemon=True)
     _ai_thread.start()
-    print('SoaringBird 论坛服务器启动中...')
+    print('OVC 论坛服务器启动中...')
     print('数据库:', DB_PATH if not _USE_PG else 'PostgreSQL (' + os.environ.get('DATABASE_URL', '').split('@')[-1] + ')')
     _port = int(os.environ.get('PORT', 8080))
     print('访问 http://localhost:%d/' % _port)
