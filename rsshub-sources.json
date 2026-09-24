@@ -1,0 +1,3655 @@
+{
+  "meta": {
+    "project": "翱翔鸟 peacenews",
+    "artifact": "RSSHub 路由矩阵（按地域 × 领域）",
+    "generated_at": "2026-09-15",
+    "updated_at": "2026-09-17 12:54:32",
+    "route_source": "RSSHub 官方仓库（DIYgod/RSSHub）路由树枚举，共 6595 个路由文件 / 1917 个命名空间，路由均取自真实命名空间，无臆造",
+    "probe_method": "对 rsshub.app 及 4 个公共实例（hub.slarker.me、rsshub.rssforever.com、rsshub.liumingye.cn、rsshub.ktachibana.party）分多轮发起真实 HTTP 请求（浏览器 UA、SSL 免校验、超时 10~14s），按响应码与响应体判定状态；同一路由取全部轮次中的最优实测证据定档",
+    "status_definition": {
+      "ok": "公共实例返回有效 RSS/Atom 订阅流（实测✓，至少一轮实测为 200 + 订阅体）",
+      "need_self": "公共实例返回 404，路由在官方仓库中存在但未部署，需自建实例",
+      "need_key": "公共实例明确要求 Key / 凭据（实测 401/403 或响应体提示需配置）",
+      "invalid": "公共实例 503/429/超时，未返回有效订阅流（多为实例限流，本次未验证通过）"
+    },
+    "probe_instances": [
+      "hub.slarker.me",
+      "rsshub.rssforever.com",
+      "rsshub.liumingye.cn",
+      "rsshub.ktachibana.party"
+    ],
+    "probe_rounds": 9,
+    "total": 193,
+    "status_summary": {
+      "ok": 92,
+      "need_self": 43,
+      "invalid": 58
+    },
+    "region_count": {
+      "中国": 94,
+      "亚太": 25,
+      "欧洲": 22,
+      "北美": 30,
+      "中东与非洲": 4,
+      "全球": 18
+    },
+    "domain_count": {
+      "时政": 67,
+      "财经": 28,
+      "科技": 37,
+      "国际": 10,
+      "社会与法治": 14,
+      "文体娱乐": 18,
+      "环境与科学": 19
+    },
+    "source_doc": "source-pool.json（122 条直连源）",
+    "rsshub_doc": "https://docs.rsshub.app/"
+  },
+  "matrix": {
+    "中国": {
+      "时政": {
+        "total": 22,
+        "ok": 14,
+        "need_self": 4,
+        "invalid": 4
+      },
+      "财经": {
+        "total": 17,
+        "ok": 12,
+        "need_self": 3,
+        "invalid": 2
+      },
+      "科技": {
+        "total": 23,
+        "ok": 11,
+        "need_self": 8,
+        "invalid": 4
+      },
+      "国际": {
+        "total": 3,
+        "ok": 2,
+        "need_self": 1
+      },
+      "社会与法治": {
+        "total": 9,
+        "ok": 2,
+        "need_self": 5,
+        "invalid": 2
+      },
+      "文体娱乐": {
+        "total": 12,
+        "ok": 5,
+        "need_self": 4,
+        "invalid": 3
+      },
+      "环境与科学": {
+        "total": 8,
+        "ok": 4,
+        "need_self": 1,
+        "invalid": 3
+      }
+    },
+    "亚太": {
+      "时政": {
+        "total": 13,
+        "ok": 7,
+        "need_self": 3,
+        "invalid": 3
+      },
+      "财经": {
+        "total": 3,
+        "ok": 2,
+        "invalid": 1
+      },
+      "科技": {
+        "total": 1,
+        "ok": 1
+      },
+      "国际": {
+        "total": 2,
+        "ok": 1,
+        "invalid": 1
+      },
+      "社会与法治": {
+        "total": 4,
+        "ok": 3,
+        "invalid": 1
+      },
+      "文体娱乐": {
+        "total": 2,
+        "invalid": 2
+      }
+    },
+    "欧洲": {
+      "时政": {
+        "total": 12,
+        "ok": 7,
+        "need_self": 1,
+        "invalid": 4
+      },
+      "财经": {
+        "total": 4,
+        "need_self": 1,
+        "invalid": 3
+      },
+      "科技": {
+        "total": 2,
+        "invalid": 2
+      },
+      "国际": {
+        "total": 1,
+        "ok": 1
+      },
+      "社会与法治": {
+        "total": 1,
+        "ok": 1
+      },
+      "文体娱乐": {
+        "total": 2,
+        "need_self": 1,
+        "invalid": 1
+      }
+    },
+    "北美": {
+      "时政": {
+        "total": 10,
+        "ok": 6,
+        "need_self": 1,
+        "invalid": 3
+      },
+      "财经": {
+        "total": 3,
+        "ok": 2,
+        "invalid": 1
+      },
+      "科技": {
+        "total": 6,
+        "ok": 2,
+        "need_self": 3,
+        "invalid": 1
+      },
+      "国际": {
+        "total": 1,
+        "need_self": 1
+      },
+      "文体娱乐": {
+        "total": 2,
+        "need_self": 1,
+        "invalid": 1
+      },
+      "环境与科学": {
+        "total": 8,
+        "ok": 3,
+        "invalid": 5
+      }
+    },
+    "中东与非洲": {
+      "时政": {
+        "total": 4,
+        "ok": 1,
+        "invalid": 3
+      }
+    },
+    "全球": {
+      "时政": {
+        "total": 6,
+        "ok": 2,
+        "need_self": 2,
+        "invalid": 2
+      },
+      "财经": {
+        "total": 1,
+        "invalid": 1
+      },
+      "科技": {
+        "total": 5,
+        "ok": 1,
+        "need_self": 2,
+        "invalid": 2
+      },
+      "国际": {
+        "total": 3,
+        "ok": 2,
+        "invalid": 1
+      },
+      "环境与科学": {
+        "total": 3,
+        "need_self": 1,
+        "invalid": 2
+      }
+    }
+  },
+  "sources": [
+    {
+      "name": "半月谈",
+      "region": "中国",
+      "domain": "时政",
+      "rsshub_route": "/banyuetan",
+      "url": "https://rsshub.app/banyuetan",
+      "status": "ok",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "https://hub.slarker.me",
+      "http_code": 200,
+      "probe_log": [],
+      "note": "公共实例返回有效 RSS/Atom 订阅流（https://hub.slarker.me, HTTP 200）",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "财新 · 最新",
+      "region": "中国",
+      "domain": "时政",
+      "rsshub_route": "/caixin/latest",
+      "url": "https://rsshub.rssforever.com/caixin/latest",
+      "status": "ok",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "https://rsshub.rssforever.com",
+      "http_code": 200,
+      "probe_log": [],
+      "note": "公共实例返回有效 RSS/Atom 订阅流（https://rsshub.rssforever.com, HTTP 200）",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "财新国际",
+      "region": "中国",
+      "domain": "时政",
+      "rsshub_route": "/caixinglobal/latest",
+      "url": "https://rsshub.woodland.cafe/caixinglobal/latest",
+      "status": "ok",
+      "need_key": false,
+      "language": "en",
+      "probe_instance": "https://rsshub.woodland.cafe",
+      "http_code": 200,
+      "probe_log": [],
+      "note": "公共实例返回有效 RSS/Atom 订阅流（https://rsshub.woodland.cafe, HTTP 200）",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "央视 · 新闻联播",
+      "region": "中国",
+      "domain": "时政",
+      "rsshub_route": "/cctv/xwlb",
+      "url": "https://rsshub.woodland.cafe/cctv/xwlb",
+      "status": "ok",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "https://rsshub.woodland.cafe",
+      "http_code": 200,
+      "probe_log": [],
+      "note": "公共实例返回有效 RSS/Atom 订阅流（https://rsshub.woodland.cafe, HTTP 200）",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "中国日报 · 双语",
+      "region": "中国",
+      "domain": "时政",
+      "rsshub_route": "/chinadaily/language",
+      "url": "https://rsshub.woodland.cafe/chinadaily/language",
+      "status": "ok",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "https://rsshub.woodland.cafe",
+      "http_code": 200,
+      "probe_log": [],
+      "note": "公共实例返回有效 RSS/Atom 订阅流（https://rsshub.woodland.cafe, HTTP 200）",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "中国新闻网",
+      "region": "中国",
+      "domain": "时政",
+      "rsshub_route": "/chinanews",
+      "url": "https://rsshub.app/chinanews",
+      "status": "ok",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "https://rsshub.liumingye.cn",
+      "http_code": 200,
+      "probe_log": [],
+      "note": "公共实例返回有效 RSS/Atom 订阅流（https://rsshub.liumingye.cn, HTTP 200）",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "生态环境部 · 要闻动态",
+      "region": "中国",
+      "domain": "时政",
+      "rsshub_route": "/gov/mee/ywdt",
+      "url": "https://rsshub.app/gov/mee/ywdt",
+      "status": "ok",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "https://rsshub.ktachibana.party",
+      "http_code": 200,
+      "probe_log": [],
+      "note": "公共实例返回有效 RSS/Atom 订阅流（https://rsshub.ktachibana.party, HTTP 200）",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "国家发改委 · 新闻动态",
+      "region": "中国",
+      "domain": "时政",
+      "rsshub_route": "/gov/ndrc/xwdt",
+      "url": "https://hub.slarker.me/gov/ndrc/xwdt",
+      "status": "ok",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "https://hub.slarker.me",
+      "http_code": 200,
+      "probe_log": [],
+      "note": "公共实例返回有效 RSS/Atom 订阅流（https://hub.slarker.me, HTTP 200）",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "中国政府网 · 国务院文件",
+      "region": "中国",
+      "domain": "时政",
+      "rsshub_route": "/gov/zhengce/govall",
+      "url": "https://rsshub.woodland.cafe/gov/zhengce/govall",
+      "status": "ok",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "https://rsshub.woodland.cafe",
+      "http_code": 200,
+      "probe_log": [],
+      "note": "公共实例返回有效 RSS/Atom 订阅流（https://rsshub.woodland.cafe, HTTP 200）",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "观察者网 · 头条",
+      "region": "中国",
+      "domain": "时政",
+      "rsshub_route": "/guancha/headline",
+      "url": "https://rsshub.rssforever.com/guancha/headline",
+      "status": "ok",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "https://rsshub.rssforever.com",
+      "http_code": 200,
+      "probe_log": [],
+      "note": "公共实例返回有效 RSS/Atom 订阅流（https://rsshub.rssforever.com, HTTP 200）",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "人民网",
+      "region": "中国",
+      "domain": "时政",
+      "rsshub_route": "/people",
+      "url": "https://rsshub.woodland.cafe/people",
+      "status": "ok",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "https://rsshub.woodland.cafe",
+      "http_code": 200,
+      "probe_log": [],
+      "note": "公共实例返回有效 RSS/Atom 订阅流（https://rsshub.woodland.cafe, HTTP 200）",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "人民日报 · 电子报",
+      "region": "中国",
+      "domain": "时政",
+      "rsshub_route": "/people/paper",
+      "url": "https://rsshub.app/people/paper",
+      "status": "ok",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "https://hub.slarker.me",
+      "http_code": 200,
+      "probe_log": [],
+      "note": "公共实例返回有效 RSS/Atom 订阅流（https://hub.slarker.me, HTTP 200）",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "求是网",
+      "region": "中国",
+      "domain": "时政",
+      "rsshub_route": "/qstheory",
+      "url": "https://rsshub.woodland.cafe/qstheory",
+      "status": "ok",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "https://rsshub.woodland.cafe",
+      "http_code": 200,
+      "probe_log": [],
+      "note": "公共实例返回有效 RSS/Atom 订阅流（https://rsshub.woodland.cafe, HTTP 200）",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "澎湃新闻 · 要闻",
+      "region": "中国",
+      "domain": "时政",
+      "rsshub_route": "/thepaper/featured",
+      "url": "https://hub.slarker.me/thepaper/featured",
+      "status": "ok",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "https://hub.slarker.me",
+      "http_code": 200,
+      "probe_log": [],
+      "note": "公共实例返回有效 RSS/Atom 订阅流（https://hub.slarker.me, HTTP 200）",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "工信部 · 文件发布",
+      "region": "中国",
+      "domain": "时政",
+      "rsshub_route": "/gov/miit/wjfb",
+      "url": "https://rsshub.app/gov/miit/wjfb",
+      "status": "need_self",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "",
+      "http_code": 404,
+      "probe_log": [
+        "-1",
+        "404",
+        "429",
+        "503"
+      ],
+      "note": "公共实例返回 404（hub.slarker.me、rsshub.liumingye.cn）：路由存在但未部署，需自建实例",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "商务部 · 新闻发布",
+      "region": "中国",
+      "domain": "时政",
+      "rsshub_route": "/gov/mofcom/article",
+      "url": "https://rsshub.app/gov/mofcom/article",
+      "status": "need_self",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "",
+      "http_code": 404,
+      "probe_log": [
+        "-1",
+        "404",
+        "503"
+      ],
+      "note": "公共实例返回 404（hub.slarker.me、rsshub.liumingye.cn）：路由存在但未部署，需自建实例",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "界面新闻 · 列表",
+      "region": "中国",
+      "domain": "时政",
+      "rsshub_route": "/jiemian/lists",
+      "url": "https://rsshub.app/jiemian/lists",
+      "status": "need_self",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "",
+      "http_code": 404,
+      "probe_log": [
+        "-1",
+        "404",
+        "429",
+        "503"
+      ],
+      "note": "公共实例返回 404（hub.slarker.me、rsshub.liumingye.cn）：路由存在但未部署，需自建实例",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "澎湃新闻 · 频道",
+      "region": "中国",
+      "domain": "时政",
+      "rsshub_route": "/thepaper/channel",
+      "url": "https://rsshub.app/thepaper/channel",
+      "status": "need_self",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "",
+      "http_code": 404,
+      "probe_log": [
+        "-1",
+        "404",
+        "429",
+        "503"
+      ],
+      "note": "公共实例返回 404（hub.slarker.me、rsshub.liumingye.cn）：路由存在但未部署，需自建实例",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "央视 · 栏目",
+      "region": "中国",
+      "domain": "时政",
+      "rsshub_route": "/cctv/category",
+      "url": "https://rsshub.app/cctv/category",
+      "status": "invalid",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "",
+      "http_code": -1,
+      "probe_log": [
+        "-1",
+        "429",
+        "502",
+        "503"
+      ],
+      "note": "公共实例 503/429/超时，未返回有效订阅流（-1,429,502,503）：本次未验证通过",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "中国政府网 · 政策",
+      "region": "中国",
+      "domain": "时政",
+      "rsshub_route": "/gov/zhengce",
+      "url": "https://rsshub.app/gov/zhengce",
+      "status": "invalid",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "",
+      "http_code": -1,
+      "probe_log": [
+        "-1",
+        "429",
+        "503"
+      ],
+      "note": "公共实例 503/429/超时，未返回有效订阅流（-1,429,503）：本次未验证通过",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "中国政府网 · 政策文件库",
+      "region": "中国",
+      "domain": "时政",
+      "rsshub_route": "/gov/zhengce/wenjian",
+      "url": "https://rsshub.app/gov/zhengce/wenjian",
+      "status": "invalid",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "",
+      "http_code": -1,
+      "probe_log": [
+        "-1",
+        "429",
+        "502"
+      ],
+      "note": "公共实例 503/429/超时，未返回有效订阅流（-1,429,502）：本次未验证通过",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "中国政府网 · 最新政策",
+      "region": "中国",
+      "domain": "时政",
+      "rsshub_route": "/gov/zhengce/zuixin",
+      "url": "https://rsshub.app/gov/zhengce/zuixin",
+      "status": "invalid",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "",
+      "http_code": -1,
+      "probe_log": [
+        "-1",
+        "429",
+        "503"
+      ],
+      "note": "公共实例 503/429/超时，未返回有效订阅流（-1,429,503）：本次未验证通过",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "同花顺 · 实时快讯",
+      "region": "中国",
+      "domain": "财经",
+      "rsshub_route": "/10jqka/realtimenews",
+      "url": "https://hub.slarker.me/10jqka/realtimenews",
+      "status": "ok",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "https://hub.slarker.me",
+      "http_code": 200,
+      "probe_log": [],
+      "note": "公共实例返回有效 RSS/Atom 订阅流（https://hub.slarker.me, HTTP 200）",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "199IT 数据资讯",
+      "region": "中国",
+      "domain": "财经",
+      "rsshub_route": "/199it",
+      "url": "https://rsshub.app/199it",
+      "status": "ok",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "https://hub.slarker.me",
+      "http_code": 200,
+      "probe_log": [],
+      "note": "公共实例返回有效 RSS/Atom 订阅流（https://hub.slarker.me, HTTP 200）",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "财联社 · 深度",
+      "region": "中国",
+      "domain": "财经",
+      "rsshub_route": "/cls/depth",
+      "url": "https://rsshub.app/cls/depth",
+      "status": "ok",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "https://hub.slarker.me",
+      "http_code": 200,
+      "probe_log": [],
+      "note": "公共实例返回有效 RSS/Atom 订阅流（https://hub.slarker.me, HTTP 200）",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "财联社 · 电报",
+      "region": "中国",
+      "domain": "财经",
+      "rsshub_route": "/cls/telegraph",
+      "url": "https://hub.slarker.me/cls/telegraph",
+      "status": "ok",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "https://hub.slarker.me",
+      "http_code": 200,
+      "probe_log": [],
+      "note": "公共实例返回有效 RSS/Atom 订阅流（https://hub.slarker.me, HTTP 200）",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "中国证券网",
+      "region": "中国",
+      "domain": "财经",
+      "rsshub_route": "/cs",
+      "url": "https://rsshub.woodland.cafe/cs",
+      "status": "ok",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "https://rsshub.woodland.cafe",
+      "http_code": 200,
+      "probe_log": [],
+      "note": "公共实例返回有效 RSS/Atom 订阅流（https://rsshub.woodland.cafe, HTTP 200）",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "金十数据",
+      "region": "中国",
+      "domain": "财经",
+      "rsshub_route": "/jin10",
+      "url": "https://rsshub.rssforever.com/jin10",
+      "status": "ok",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "https://rsshub.rssforever.com",
+      "http_code": 200,
+      "probe_log": [],
+      "note": "公共实例返回有效 RSS/Atom 订阅流（https://rsshub.rssforever.com, HTTP 200）",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "华尔街见闻 · 热门",
+      "region": "中国",
+      "domain": "财经",
+      "rsshub_route": "/wallstreetcn/hot",
+      "url": "https://rsshub.woodland.cafe/wallstreetcn/hot",
+      "status": "ok",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "https://rsshub.woodland.cafe",
+      "http_code": 200,
+      "probe_log": [],
+      "note": "公共实例返回有效 RSS/Atom 订阅流（https://rsshub.woodland.cafe, HTTP 200）",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "华尔街见闻 · 快讯",
+      "region": "中国",
+      "domain": "财经",
+      "rsshub_route": "/wallstreetcn/live",
+      "url": "https://rsshub.rssforever.com/wallstreetcn/live",
+      "status": "ok",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "https://rsshub.rssforever.com",
+      "http_code": 200,
+      "probe_log": [],
+      "note": "公共实例返回有效 RSS/Atom 订阅流（https://rsshub.rssforever.com, HTTP 200）",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "华尔街见闻 · 资讯",
+      "region": "中国",
+      "domain": "财经",
+      "rsshub_route": "/wallstreetcn/news",
+      "url": "https://hub.slarker.me/wallstreetcn/news",
+      "status": "ok",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "https://hub.slarker.me",
+      "http_code": 200,
+      "probe_log": [],
+      "note": "公共实例返回有效 RSS/Atom 订阅流（https://hub.slarker.me, HTTP 200）",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "雪球 · 今日话题",
+      "region": "中国",
+      "domain": "财经",
+      "rsshub_route": "/xueqiu/today",
+      "url": "https://rsshub.woodland.cafe/xueqiu/today",
+      "status": "ok",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "https://rsshub.woodland.cafe",
+      "http_code": 200,
+      "probe_log": [],
+      "note": "公共实例返回有效 RSS/Atom 订阅流（https://rsshub.woodland.cafe, HTTP 200）",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "第一财经 · 快讯",
+      "region": "中国",
+      "domain": "财经",
+      "rsshub_route": "/yicai/brief",
+      "url": "https://rsshub.rssforever.com/yicai/brief",
+      "status": "ok",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "https://rsshub.rssforever.com",
+      "http_code": 200,
+      "probe_log": [],
+      "note": "公共实例返回有效 RSS/Atom 订阅流（https://rsshub.rssforever.com, HTTP 200）",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "第一财经 · 最新",
+      "region": "中国",
+      "domain": "财经",
+      "rsshub_route": "/yicai/latest",
+      "url": "https://rsshub.rssforever.com/yicai/latest",
+      "status": "ok",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "https://rsshub.rssforever.com",
+      "http_code": 200,
+      "probe_log": [],
+      "note": "公共实例返回有效 RSS/Atom 订阅流（https://rsshub.rssforever.com, HTTP 200）",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "AI 财经社",
+      "region": "中国",
+      "domain": "财经",
+      "rsshub_route": "/aicaijing",
+      "url": "https://rsshub.app/aicaijing",
+      "status": "need_self",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "",
+      "http_code": 404,
+      "probe_log": [
+        "-1",
+        "404",
+        "429",
+        "503"
+      ],
+      "note": "公共实例返回 404（hub.slarker.me）：路由存在但未部署，需自建实例",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "东方财富 · 研报",
+      "region": "中国",
+      "domain": "财经",
+      "rsshub_route": "/eastmoney/report",
+      "url": "https://rsshub.app/eastmoney/report",
+      "status": "need_self",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "",
+      "http_code": 404,
+      "probe_log": [
+        "404",
+        "503"
+      ],
+      "note": "公共实例返回 404（hub.slarker.me、rsshub.liumingye.cn）：路由存在但未部署，需自建实例",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "证券时报 · 快讯",
+      "region": "中国",
+      "domain": "财经",
+      "rsshub_route": "/stcn/kx",
+      "url": "https://rsshub.app/stcn/kx",
+      "status": "need_self",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "",
+      "http_code": 404,
+      "probe_log": [
+        "404",
+        "503"
+      ],
+      "note": "公共实例返回 404（hub.slarker.me、rsshub.liumingye.cn）：路由存在但未部署，需自建实例",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "21财经 · 频道",
+      "region": "中国",
+      "domain": "财经",
+      "rsshub_route": "/21caijing/channel",
+      "url": "https://rsshub.app/21caijing/channel",
+      "status": "invalid",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "",
+      "http_code": -1,
+      "probe_log": [
+        "-1",
+        "429",
+        "503"
+      ],
+      "note": "公共实例 503/429/超时，未返回有效订阅流（-1,429,503）：本次未验证通过",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "晚点 LatePost",
+      "region": "中国",
+      "domain": "财经",
+      "rsshub_route": "/latepost",
+      "url": "https://rsshub.app/latepost",
+      "status": "invalid",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "",
+      "http_code": -1,
+      "probe_log": [
+        "-1",
+        "429",
+        "503"
+      ],
+      "note": "公共实例 503/429/超时，未返回有效订阅流（-1,429,503）：本次未验证通过",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "36氪 · 热榜",
+      "region": "中国",
+      "domain": "科技",
+      "rsshub_route": "/36kr/hot-list",
+      "url": "https://hub.slarker.me/36kr/hot-list",
+      "status": "ok",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "https://hub.slarker.me",
+      "http_code": 200,
+      "probe_log": [],
+      "note": "公共实例返回有效 RSS/Atom 订阅流（https://hub.slarker.me, HTTP 200）",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "AI 日报",
+      "region": "中国",
+      "domain": "科技",
+      "rsshub_route": "/ai-bot/daily-ai-news",
+      "url": "https://rsshub.woodland.cafe/ai-bot/daily-ai-news",
+      "status": "ok",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "https://rsshub.woodland.cafe",
+      "http_code": 200,
+      "probe_log": [],
+      "note": "公共实例返回有效 RSS/Atom 订阅流（https://rsshub.woodland.cafe, HTTP 200）",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "AI 基地 · 资讯",
+      "region": "中国",
+      "domain": "科技",
+      "rsshub_route": "/aibase/news",
+      "url": "https://rsshub.rssforever.com/aibase/news",
+      "status": "ok",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "https://rsshub.rssforever.com",
+      "http_code": 200,
+      "probe_log": [],
+      "note": "公共实例返回有效 RSS/Atom 订阅流（https://rsshub.rssforever.com, HTTP 200）",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "cnBeta",
+      "region": "中国",
+      "domain": "科技",
+      "rsshub_route": "/cnbeta",
+      "url": "https://rsshub.rssforever.com/cnbeta",
+      "status": "ok",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "https://rsshub.rssforever.com",
+      "http_code": 200,
+      "probe_log": [],
+      "note": "公共实例返回有效 RSS/Atom 订阅流（https://rsshub.rssforever.com, HTTP 200）",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "Foresight News · 快讯",
+      "region": "中国",
+      "domain": "科技",
+      "rsshub_route": "/foresightnews/news",
+      "url": "https://rsshub.woodland.cafe/foresightnews/news",
+      "status": "ok",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "https://rsshub.woodland.cafe",
+      "http_code": 200,
+      "probe_log": [],
+      "note": "公共实例返回有效 RSS/Atom 订阅流（https://rsshub.woodland.cafe, HTTP 200）",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "InfoQ 中文 · 推荐",
+      "region": "中国",
+      "domain": "科技",
+      "rsshub_route": "/infoq/recommend",
+      "url": "https://rsshub.app/infoq/recommend",
+      "status": "ok",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "https://rsshub.liumingye.cn",
+      "http_code": 200,
+      "probe_log": [],
+      "note": "公共实例返回有效 RSS/Atom 订阅流（https://rsshub.liumingye.cn, HTTP 200）",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "开源中国 · 资讯",
+      "region": "中国",
+      "domain": "科技",
+      "rsshub_route": "/oschina/news",
+      "url": "https://rsshub.app/oschina/news",
+      "status": "ok",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "https://rsshub.rssforever.com",
+      "http_code": 200,
+      "probe_log": [],
+      "note": "公共实例返回有效 RSS/Atom 订阅流（https://rsshub.rssforever.com, HTTP 200）",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "Solidot · 主站",
+      "region": "中国",
+      "domain": "科技",
+      "rsshub_route": "/solidot/main",
+      "url": "https://rsshub.woodland.cafe/solidot/main",
+      "status": "ok",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "https://rsshub.woodland.cafe",
+      "http_code": 200,
+      "probe_log": [],
+      "note": "公共实例返回有效 RSS/Atom 订阅流（https://rsshub.woodland.cafe, HTTP 200）",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "深潮 TechFlow · 快讯",
+      "region": "中国",
+      "domain": "科技",
+      "rsshub_route": "/techflowpost/express",
+      "url": "https://rsshub.woodland.cafe/techflowpost/express",
+      "status": "ok",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "https://rsshub.woodland.cafe",
+      "http_code": 200,
+      "probe_log": [],
+      "note": "公共实例返回有效 RSS/Atom 订阅流（https://rsshub.woodland.cafe, HTTP 200）",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "钛媒体 · 最新",
+      "region": "中国",
+      "domain": "科技",
+      "rsshub_route": "/tmtpost/new",
+      "url": "https://rsshub.woodland.cafe/tmtpost/new",
+      "status": "ok",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "https://rsshub.woodland.cafe",
+      "http_code": 200,
+      "probe_log": [],
+      "note": "公共实例返回有效 RSS/Atom 订阅流（https://rsshub.woodland.cafe, HTTP 200）",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "钛媒体 · 快讯",
+      "region": "中国",
+      "domain": "科技",
+      "rsshub_route": "/tmtpost/nictation",
+      "url": "https://rsshub.woodland.cafe/tmtpost/nictation",
+      "status": "ok",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "https://rsshub.woodland.cafe",
+      "http_code": 200,
+      "probe_log": [],
+      "note": "公共实例返回有效 RSS/Atom 订阅流（https://rsshub.woodland.cafe, HTTP 200）",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "36氪",
+      "region": "中国",
+      "domain": "科技",
+      "rsshub_route": "/36kr",
+      "url": "https://rsshub.app/36kr",
+      "status": "need_self",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "",
+      "http_code": 404,
+      "probe_log": [
+        "404",
+        "503"
+      ],
+      "note": "公共实例返回 404（hub.slarker.me、rsshub.liumingye.cn）：路由存在但未部署，需自建实例",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "51CTO · 推荐",
+      "region": "中国",
+      "domain": "科技",
+      "rsshub_route": "/51cto/recommend",
+      "url": "https://rsshub.app/51cto/recommend",
+      "status": "need_self",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "",
+      "http_code": 404,
+      "probe_log": [
+        "404",
+        "503"
+      ],
+      "note": "公共实例返回 404（hub.slarker.me、rsshub.liumingye.cn）：路由存在但未部署，需自建实例",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "IT桔子 · 创投",
+      "region": "中国",
+      "domain": "科技",
+      "rsshub_route": "/chinaventure",
+      "url": "https://rsshub.app/chinaventure",
+      "status": "need_self",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "",
+      "http_code": 404,
+      "probe_log": [
+        "404",
+        "503"
+      ],
+      "note": "公共实例返回 404（hub.slarker.me、rsshub.liumingye.cn）：路由存在但未部署，需自建实例",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "爱范儿",
+      "region": "中国",
+      "domain": "科技",
+      "rsshub_route": "/ifanr",
+      "url": "https://rsshub.app/ifanr",
+      "status": "need_self",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "",
+      "http_code": 404,
+      "probe_log": [
+        "404",
+        "503"
+      ],
+      "note": "公共实例返回 404（hub.slarker.me、rsshub.liumingye.cn）：路由存在但未部署，需自建实例",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "IT之家",
+      "region": "中国",
+      "domain": "科技",
+      "rsshub_route": "/ithome",
+      "url": "https://rsshub.app/ithome",
+      "status": "need_self",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "",
+      "http_code": 404,
+      "probe_log": [
+        "404",
+        "503"
+      ],
+      "note": "公共实例返回 404（hub.slarker.me、rsshub.liumingye.cn）：路由存在但未部署，需自建实例",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "掘金 · 文章",
+      "region": "中国",
+      "domain": "科技",
+      "rsshub_route": "/juejin/posts",
+      "url": "https://rsshub.app/juejin/posts",
+      "status": "need_self",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "",
+      "http_code": 404,
+      "probe_log": [
+        "404",
+        "503"
+      ],
+      "note": "公共实例返回 404（hub.slarker.me、rsshub.liumingye.cn）：路由存在但未部署，需自建实例",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "少数派",
+      "region": "中国",
+      "domain": "科技",
+      "rsshub_route": "/sspai",
+      "url": "https://rsshub.app/sspai",
+      "status": "need_self",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "",
+      "http_code": 404,
+      "probe_log": [
+        "404",
+        "503"
+      ],
+      "note": "公共实例返回 404（hub.slarker.me、rsshub.liumingye.cn）：路由存在但未部署，需自建实例",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "少数派 · 专栏",
+      "region": "中国",
+      "domain": "科技",
+      "rsshub_route": "/sspai/column",
+      "url": "https://rsshub.app/sspai/column",
+      "status": "need_self",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "",
+      "http_code": 404,
+      "probe_log": [
+        "404",
+        "503"
+      ],
+      "note": "公共实例返回 404（hub.slarker.me、rsshub.liumingye.cn）：路由存在但未部署，需自建实例",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "极客公园",
+      "region": "中国",
+      "domain": "科技",
+      "rsshub_route": "/geekpark",
+      "url": "https://rsshub.app/geekpark",
+      "status": "invalid",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "",
+      "http_code": -1,
+      "probe_log": [
+        "-1",
+        "429",
+        "503"
+      ],
+      "note": "公共实例 503/429/超时，未返回有效订阅流（-1,429,503）：本次未验证通过",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "IT之家 · 排行",
+      "region": "中国",
+      "domain": "科技",
+      "rsshub_route": "/ithome/ranking",
+      "url": "https://rsshub.app/ithome/ranking",
+      "status": "invalid",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "",
+      "http_code": -1,
+      "probe_log": [
+        "429",
+        "503"
+      ],
+      "note": "公共实例 503/429/超时，未返回有效订阅流（429,503）：本次未验证通过",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "Odaily · 快讯",
+      "region": "中国",
+      "domain": "科技",
+      "rsshub_route": "/odaily/newsflash",
+      "url": "https://rsshub.app/odaily/newsflash",
+      "status": "invalid",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "",
+      "http_code": -1,
+      "probe_log": [
+        "-1",
+        "429",
+        "503"
+      ],
+      "note": "公共实例 503/429/超时，未返回有效订阅流（-1,429,503）：本次未验证通过",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "PANews · 快讯",
+      "region": "中国",
+      "domain": "科技",
+      "rsshub_route": "/panewslab/news",
+      "url": "https://rsshub.app/panewslab/news",
+      "status": "invalid",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "",
+      "http_code": -1,
+      "probe_log": [
+        "-1",
+        "429",
+        "503"
+      ],
+      "note": "公共实例 503/429/超时，未返回有效订阅流（-1,429,503）：本次未验证通过",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "CGTN · 热门",
+      "region": "中国",
+      "domain": "国际",
+      "rsshub_route": "/cgtn/most",
+      "url": "https://rsshub.app/cgtn/most",
+      "status": "ok",
+      "need_key": false,
+      "language": "en",
+      "probe_instance": "https://hub.slarker.me",
+      "http_code": 200,
+      "probe_log": [],
+      "note": "公共实例返回有效 RSS/Atom 订阅流（https://hub.slarker.me, HTTP 200）",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "CGTN · 观点",
+      "region": "中国",
+      "domain": "国际",
+      "rsshub_route": "/cgtn/opinions",
+      "url": "https://rsshub.woodland.cafe/cgtn/opinions",
+      "status": "ok",
+      "need_key": false,
+      "language": "en",
+      "probe_instance": "https://rsshub.woodland.cafe",
+      "http_code": 200,
+      "probe_log": [],
+      "note": "公共实例返回有效 RSS/Atom 订阅流（https://rsshub.woodland.cafe, HTTP 200）",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "环球网",
+      "region": "中国",
+      "domain": "国际",
+      "rsshub_route": "/huanqiu",
+      "url": "https://rsshub.app/huanqiu",
+      "status": "need_self",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "",
+      "http_code": 404,
+      "probe_log": [
+        "-1",
+        "404",
+        "503"
+      ],
+      "note": "公共实例返回 404（hub.slarker.me、rsshub.liumingye.cn）：路由存在但未部署，需自建实例",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "最高人民法院",
+      "region": "中国",
+      "domain": "社会与法治",
+      "rsshub_route": "/gov/court",
+      "url": "https://rsshub.woodland.cafe/gov/court",
+      "status": "ok",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "https://rsshub.woodland.cafe",
+      "http_code": 200,
+      "probe_log": [],
+      "note": "公共实例返回有效 RSS/Atom 订阅流（https://rsshub.woodland.cafe, HTTP 200）",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "新闻联播 · 政务数据",
+      "region": "中国",
+      "domain": "社会与法治",
+      "rsshub_route": "/govopendata/xinwenlianbo",
+      "url": "https://rsshub.app/govopendata/xinwenlianbo",
+      "status": "ok",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "https://hub.slarker.me",
+      "http_code": 200,
+      "probe_log": [],
+      "note": "公共实例返回有效 RSS/Atom 订阅流（https://hub.slarker.me, HTTP 200）",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "新京报 · 栏目",
+      "region": "中国",
+      "domain": "社会与法治",
+      "rsshub_route": "/bjnews/cat",
+      "url": "https://rsshub.app/bjnews/cat",
+      "status": "need_self",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "",
+      "http_code": 404,
+      "probe_log": [
+        "-1",
+        "404",
+        "503"
+      ],
+      "note": "公共实例返回 404（hub.slarker.me、rsshub.liumingye.cn）：路由存在但未部署，需自建实例",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "全国人大",
+      "region": "中国",
+      "domain": "社会与法治",
+      "rsshub_route": "/gov/npc",
+      "url": "https://rsshub.app/gov/npc",
+      "status": "need_self",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "",
+      "http_code": 404,
+      "probe_log": [
+        "-1",
+        "404",
+        "503"
+      ],
+      "note": "公共实例返回 404（hub.slarker.me、rsshub.liumingye.cn）：路由存在但未部署，需自建实例",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "无讼 · 裁判文书",
+      "region": "中国",
+      "domain": "社会与法治",
+      "rsshub_route": "/itslaw/judgements",
+      "url": "https://rsshub.app/itslaw/judgements",
+      "status": "need_self",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "",
+      "http_code": 404,
+      "probe_log": [
+        "404",
+        "503"
+      ],
+      "note": "公共实例返回 404（hub.slarker.me、rsshub.liumingye.cn）：路由存在但未部署，需自建实例",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "最高法 · 美国(参考)",
+      "region": "中国",
+      "domain": "社会与法治",
+      "rsshub_route": "/supremecourt",
+      "url": "https://rsshub.app/supremecourt",
+      "status": "need_self",
+      "need_key": false,
+      "language": "en",
+      "probe_instance": "",
+      "http_code": 404,
+      "probe_log": [
+        "-1",
+        "404",
+        "503"
+      ],
+      "note": "公共实例返回 404（hub.slarker.me、rsshub.liumingye.cn）：路由存在但未部署，需自建实例",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "深圳新闻网 · 排行",
+      "region": "中国",
+      "domain": "社会与法治",
+      "rsshub_route": "/sznews/ranking",
+      "url": "https://rsshub.app/sznews/ranking",
+      "status": "need_self",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "",
+      "http_code": 404,
+      "probe_log": [
+        "-1",
+        "404",
+        "429",
+        "503"
+      ],
+      "note": "公共实例返回 404（rsshub.liumingye.cn）：路由存在但未部署，需自建实例",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "环球法律评论",
+      "region": "中国",
+      "domain": "社会与法治",
+      "rsshub_route": "/globallawreview",
+      "url": "https://rsshub.app/globallawreview",
+      "status": "invalid",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "",
+      "http_code": -1,
+      "probe_log": [
+        "-1",
+        "429"
+      ],
+      "note": "公共实例 503/429/超时，未返回有效订阅流（-1,429）：本次未验证通过",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "司法部 · 新闻",
+      "region": "中国",
+      "domain": "社会与法治",
+      "rsshub_route": "/gov/moj/aac/news",
+      "url": "https://rsshub.app/gov/moj/aac/news",
+      "status": "invalid",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "",
+      "http_code": -1,
+      "probe_log": [
+        "-1",
+        "429",
+        "503"
+      ],
+      "note": "公共实例 503/429/超时，未返回有效订阅流（-1,429,503）：本次未验证通过",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "哔哩哔哩 · 排行榜",
+      "region": "中国",
+      "domain": "文体娱乐",
+      "rsshub_route": "/bilibili/ranking",
+      "url": "https://rsshub.woodland.cafe/bilibili/ranking",
+      "status": "ok",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "https://rsshub.woodland.cafe",
+      "http_code": 200,
+      "probe_log": [],
+      "note": "公共实例返回有效 RSS/Atom 订阅流（https://rsshub.woodland.cafe, HTTP 200）",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "凤凰网 · 资讯",
+      "region": "中国",
+      "domain": "社会",
+      "rsshub_route": "/ifeng/news",
+      "url": "https://rsshub.rssforever.com/ifeng/news",
+      "status": "ok",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "https://rsshub.rssforever.com",
+      "http_code": 200,
+      "probe_log": [],
+      "note": "公共实例返回有效 RSS/Atom 订阅流（woodland.cafe / rssforever，2026-09-17 复核）",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "新浪 · 滚动新闻",
+      "region": "中国",
+      "domain": "文体娱乐",
+      "rsshub_route": "/sina/rollnews",
+      "url": "https://rsshub.woodland.cafe/sina/rollnews",
+      "status": "ok",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "https://rsshub.woodland.cafe",
+      "http_code": 200,
+      "probe_log": [],
+      "note": "公共实例返回有效 RSS/Atom 订阅流（https://rsshub.woodland.cafe, HTTP 200）",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "知乎日报",
+      "region": "中国",
+      "domain": "文体娱乐",
+      "rsshub_route": "/zhihu/daily",
+      "url": "https://rsshub.rssforever.com/zhihu/daily",
+      "status": "ok",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "https://rsshub.rssforever.com",
+      "http_code": 200,
+      "probe_log": [
+        "200"
+      ],
+      "note": "公共实例返回有效 RSS/Atom 订阅流（https://rsshub.rssforever.com, HTTP 200）",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "知乎 · 热榜",
+      "region": "中国",
+      "domain": "文体娱乐",
+      "rsshub_route": "/zhihu/hot",
+      "url": "https://hub.slarker.me/zhihu/hot",
+      "status": "ok",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "https://hub.slarker.me",
+      "http_code": 200,
+      "probe_log": [],
+      "note": "公共实例返回有效 RSS/Atom 订阅流（https://hub.slarker.me, HTTP 200）",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "哔哩哔哩 · 热门",
+      "region": "中国",
+      "domain": "文体娱乐",
+      "rsshub_route": "/bilibili/popular",
+      "url": "https://rsshub.app/bilibili/popular",
+      "status": "need_self",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "",
+      "http_code": 404,
+      "probe_log": [
+        "404",
+        "503"
+      ],
+      "note": "公共实例返回 404（hub.slarker.me、rsshub.liumingye.cn）：路由存在但未部署，需自建实例",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "豆瓣 · 小组",
+      "region": "中国",
+      "domain": "文体娱乐",
+      "rsshub_route": "/douban/other/group",
+      "url": "https://rsshub.app/douban/other/group",
+      "status": "need_self",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "",
+      "http_code": 404,
+      "probe_log": [
+        "404",
+        "503"
+      ],
+      "note": "公共实例返回 404（hub.slarker.me、rsshub.liumingye.cn）：路由存在但未部署，需自建实例",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "豆瓣 · 正在上映",
+      "region": "中国",
+      "domain": "文体娱乐",
+      "rsshub_route": "/douban/other/playing",
+      "url": "https://rsshub.app/douban/other/playing",
+      "status": "need_self",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "",
+      "http_code": 404,
+      "probe_log": [
+        "404",
+        "503"
+      ],
+      "note": "公共实例返回 404（hub.slarker.me、rsshub.liumingye.cn）：路由存在但未部署，需自建实例",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "豆瓣 · 热门话题",
+      "region": "中国",
+      "domain": "文体娱乐",
+      "rsshub_route": "/douban/other/topic",
+      "url": "https://rsshub.app/douban/other/topic",
+      "status": "need_self",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "",
+      "http_code": 404,
+      "probe_log": [
+        "404",
+        "503"
+      ],
+      "note": "公共实例返回 404（hub.slarker.me、rsshub.liumingye.cn）：路由存在但未部署，需自建实例",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "虎扑 · 新闻",
+      "region": "中国",
+      "domain": "文体娱乐",
+      "rsshub_route": "/hupu/news",
+      "url": "https://rsshub.app/hupu/news",
+      "status": "invalid",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "",
+      "http_code": -1,
+      "probe_log": [
+        "429",
+        "503"
+      ],
+      "note": "公共实例 503/429/超时，未返回有效订阅流（429,503）：本次未验证通过",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "新浪 · 体育",
+      "region": "中国",
+      "domain": "文体娱乐",
+      "rsshub_route": "/sina/sports",
+      "url": "https://rsshub.app/sina/sports",
+      "status": "invalid",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "",
+      "http_code": -1,
+      "probe_log": [
+        "-1",
+        "429",
+        "503"
+      ],
+      "note": "公共实例 503/429/超时，未返回有效订阅流（-1,429,503）：本次未验证通过",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "微博 · 热搜",
+      "region": "中国",
+      "domain": "文体娱乐",
+      "rsshub_route": "/weibo/search/hot",
+      "url": "https://rsshub.app/weibo/search/hot",
+      "status": "invalid",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "",
+      "http_code": -1,
+      "probe_log": [
+        "429",
+        "503"
+      ],
+      "note": "公共实例 503/429/超时，未返回有效订阅流（429,503）：本次未验证通过",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "果壳 · 科学人",
+      "region": "中国",
+      "domain": "环境与科学",
+      "rsshub_route": "/guokr/scientific",
+      "url": "https://rsshub.woodland.cafe/guokr/scientific",
+      "status": "ok",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "https://rsshub.woodland.cafe",
+      "http_code": 200,
+      "probe_log": [],
+      "note": "公共实例返回有效 RSS/Atom 订阅流（https://rsshub.woodland.cafe, HTTP 200）",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "科学网 · 博客",
+      "region": "中国",
+      "domain": "环境与科学",
+      "rsshub_route": "/sciencenet/blog",
+      "url": "https://rsshub.app/sciencenet/blog",
+      "status": "ok",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "https://rsshub.woodland.cafe",
+      "http_code": 200,
+      "probe_log": [],
+      "note": "公共实例返回有效 RSS/Atom 订阅流（https://rsshub.woodland.cafe, HTTP 200）",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "天气预警",
+      "region": "中国",
+      "domain": "环境与科学",
+      "rsshub_route": "/soweather/warn",
+      "url": "https://rsshub.woodland.cafe/soweather/warn",
+      "status": "ok",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "https://rsshub.woodland.cafe",
+      "http_code": 200,
+      "probe_log": [],
+      "note": "公共实例返回有效 RSS/Atom 订阅流（https://rsshub.woodland.cafe, HTTP 200）",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "科技日报 · 数字报",
+      "region": "中国",
+      "domain": "环境与科学",
+      "rsshub_route": "/stdaily/digitalpaper",
+      "url": "https://rsshub.woodland.cafe/stdaily/digitalpaper",
+      "status": "ok",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "https://rsshub.woodland.cafe",
+      "http_code": 200,
+      "probe_log": [],
+      "note": "公共实例返回有效 RSS/Atom 订阅流（https://rsshub.woodland.cafe, HTTP 200）",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "果壳 · 频道",
+      "region": "中国",
+      "domain": "环境与科学",
+      "rsshub_route": "/guokr/channel",
+      "url": "https://rsshub.app/guokr/channel",
+      "status": "need_self",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "",
+      "http_code": 404,
+      "probe_log": [
+        "404",
+        "503"
+      ],
+      "note": "公共实例返回 404（hub.slarker.me、rsshub.liumingye.cn）：路由存在但未部署，需自建实例",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "空气质量 AQICN",
+      "region": "中国",
+      "domain": "环境与科学",
+      "rsshub_route": "/aqicn/aqi",
+      "url": "https://rsshub.app/aqicn/aqi",
+      "status": "invalid",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "",
+      "http_code": -1,
+      "probe_log": [
+        "-1",
+        "429",
+        "503"
+      ],
+      "note": "公共实例 503/429/超时，未返回有效订阅流（-1,429,503）：本次未验证通过",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "中国地震台网",
+      "region": "中国",
+      "domain": "环境与科学",
+      "rsshub_route": "/earthquake",
+      "url": "https://rsshub.app/earthquake",
+      "status": "invalid",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "",
+      "http_code": -1,
+      "probe_log": [
+        "-1",
+        "429",
+        "503"
+      ],
+      "note": "公共实例 503/429/超时，未返回有效订阅流（-1,429,503）：本次未验证通过",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "中国地震台网 · CEIC",
+      "region": "中国",
+      "domain": "环境与科学",
+      "rsshub_route": "/earthquake/ceic",
+      "url": "https://rsshub.app/earthquake/ceic",
+      "status": "invalid",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "",
+      "http_code": -1,
+      "probe_log": [
+        "-1",
+        "429",
+        "503"
+      ],
+      "note": "公共实例 503/429/超时，未返回有效订阅流（-1,429,503）：本次未验证通过",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "8world 新加坡",
+      "region": "亚太",
+      "domain": "时政",
+      "rsshub_route": "/8world",
+      "url": "https://rsshub.woodland.cafe/8world",
+      "status": "ok",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "https://rsshub.woodland.cafe",
+      "http_code": 200,
+      "probe_log": [],
+      "note": "公共实例返回有效 RSS/Atom 订阅流（https://rsshub.woodland.cafe, HTTP 200）",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "朝日新闻",
+      "region": "亚太",
+      "domain": "时政",
+      "rsshub_route": "/asahi",
+      "url": "https://rsshub.woodland.cafe/asahi",
+      "status": "ok",
+      "need_key": false,
+      "language": "ja",
+      "probe_instance": "https://rsshub.woodland.cafe",
+      "http_code": 200,
+      "probe_log": [
+        "-1",
+        "404",
+        "429",
+        "503"
+      ],
+      "note": "公共实例返回有效 RSS/Atom 订阅流（https://rsshub.woodland.cafe, HTTP 200）",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "BNT 韩国",
+      "region": "亚太",
+      "domain": "时政",
+      "rsshub_route": "/bntnews",
+      "url": "https://rsshub.app/bntnews",
+      "status": "ok",
+      "need_key": false,
+      "language": "ko",
+      "probe_instance": "https://rsshub.liumingye.cn",
+      "http_code": 200,
+      "probe_log": [
+        "-1",
+        "200",
+        "429"
+      ],
+      "note": "公共实例返回有效 RSS/Atom 订阅流（https://rsshub.liumingye.cn, HTTP 200）",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "亚洲新闻台 CNA",
+      "region": "亚太",
+      "domain": "时政",
+      "rsshub_route": "/cna",
+      "url": "https://rsshub.woodland.cafe/cna",
+      "status": "ok",
+      "need_key": false,
+      "language": "en",
+      "probe_instance": "https://rsshub.woodland.cafe",
+      "http_code": 200,
+      "probe_log": [
+        "-1",
+        "200"
+      ],
+      "note": "公共实例返回有效 RSS/Atom 订阅流（https://rsshub.woodland.cafe, HTTP 200）",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "韩国先驱报",
+      "region": "亚太",
+      "domain": "时政",
+      "rsshub_route": "/koreaherald",
+      "url": "https://rsshub.app/koreaherald",
+      "status": "ok",
+      "need_key": false,
+      "language": "en",
+      "probe_instance": "https://hub.slarker.me",
+      "http_code": 200,
+      "probe_log": [
+        "-1",
+        "200"
+      ],
+      "note": "公共实例返回有效 RSS/Atom 订阅流（https://hub.slarker.me, HTTP 200）",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "共同社",
+      "region": "亚太",
+      "domain": "时政",
+      "rsshub_route": "/kyodonews",
+      "url": "https://rsshub.rssforever.com/kyodonews",
+      "status": "ok",
+      "need_key": false,
+      "language": "ja",
+      "probe_instance": "https://rsshub.rssforever.com",
+      "http_code": 200,
+      "probe_log": [
+        "-1",
+        "200"
+      ],
+      "note": "公共实例返回有效 RSS/Atom 订阅流（https://rsshub.rssforever.com, HTTP 200）",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "NHK 新闻",
+      "region": "亚太",
+      "domain": "时政",
+      "rsshub_route": "/nhk/news",
+      "url": "https://rsshub.app/nhk/news",
+      "status": "ok",
+      "need_key": false,
+      "language": "ja",
+      "probe_instance": "https://hub.slarker.me",
+      "http_code": 200,
+      "probe_log": [
+        "-1",
+        "200"
+      ],
+      "note": "公共实例返回有效 RSS/Atom 订阅流（https://hub.slarker.me, HTTP 200）",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "马来西亚今日",
+      "region": "亚太",
+      "domain": "时政",
+      "rsshub_route": "/malaysiakini",
+      "url": "https://rsshub.app/malaysiakini",
+      "status": "need_self",
+      "need_key": false,
+      "language": "en",
+      "probe_instance": "",
+      "http_code": 404,
+      "probe_log": [
+        "404",
+        "503"
+      ],
+      "note": "公共实例返回 404（hub.slarker.me、rsshub.liumingye.cn）：路由存在但未部署，需自建实例",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "南华早报 SCMP",
+      "region": "亚太",
+      "domain": "时政",
+      "rsshub_route": "/scmp",
+      "url": "https://rsshub.app/scmp",
+      "status": "need_self",
+      "need_key": false,
+      "language": "en",
+      "probe_instance": "",
+      "http_code": 404,
+      "probe_log": [
+        "404",
+        "503"
+      ],
+      "note": "公共实例返回 404（hub.slarker.me、rsshub.liumingye.cn）：路由存在但未部署，需自建实例",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "印度教徒报 · 话题",
+      "region": "亚太",
+      "domain": "时政",
+      "rsshub_route": "/thehindu/topic",
+      "url": "https://rsshub.app/thehindu/topic",
+      "status": "need_self",
+      "need_key": false,
+      "language": "en",
+      "probe_instance": "",
+      "http_code": 404,
+      "probe_log": [
+        "-1",
+        "404",
+        "429",
+        "503"
+      ],
+      "note": "公共实例返回 404（hub.slarker.me、rsshub.liumingye.cn）：路由存在但未部署，需自建实例",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "印度快报 · 版块",
+      "region": "亚太",
+      "domain": "时政",
+      "rsshub_route": "/indianexpress/section",
+      "url": "https://rsshub.app/indianexpress/section",
+      "status": "invalid",
+      "need_key": false,
+      "language": "en",
+      "probe_instance": "",
+      "http_code": -1,
+      "probe_log": [
+        "-1",
+        "429",
+        "503"
+      ],
+      "note": "公共实例 503/429/超时，未返回有效订阅流（-1,429,503）：本次未验证通过",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "联合早报",
+      "region": "亚太",
+      "domain": "时政",
+      "rsshub_route": "/straitstimes",
+      "url": "https://rsshub.woodland.cafe/zaobao/realtime/china",
+      "status": "ok",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "",
+      "http_code": -1,
+      "probe_log": [
+        "-1",
+        "429",
+        "503"
+      ],
+      "note": "公共实例 503/429/超时，未返回有效订阅流（-1,429,503）：本次未验证通过",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "台湾英文新闻 · 热门",
+      "region": "亚太",
+      "domain": "时政",
+      "rsshub_route": "/taiwannews/hot",
+      "url": "https://rsshub.app/taiwannews/hot",
+      "status": "invalid",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "",
+      "http_code": -1,
+      "probe_log": [
+        "-1",
+        "429",
+        "503"
+      ],
+      "note": "公共实例 503/429/超时，未返回有效订阅流（-1,429,503）：本次未验证通过",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "DealStreetAsia",
+      "region": "亚太",
+      "domain": "财经",
+      "rsshub_route": "/dealstreetasia/home",
+      "url": "https://rsshub.app/dealstreetasia/home",
+      "status": "ok",
+      "need_key": false,
+      "language": "en",
+      "probe_instance": "https://hub.slarker.me",
+      "http_code": 200,
+      "probe_log": [],
+      "note": "公共实例返回有效 RSS/Atom 订阅流（https://hub.slarker.me, HTTP 200）",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "日经亚洲",
+      "region": "亚太",
+      "domain": "财经",
+      "rsshub_route": "/nikkei/asia",
+      "url": "https://rsshub.app/nikkei/asia",
+      "status": "ok",
+      "need_key": false,
+      "language": "en",
+      "probe_instance": "https://rsshub.liumingye.cn",
+      "http_code": 200,
+      "probe_log": [],
+      "note": "公共实例返回有效 RSS/Atom 订阅流（https://rsshub.liumingye.cn, HTTP 200）",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "日经中文网",
+      "region": "亚太",
+      "domain": "财经",
+      "rsshub_route": "/nikkei/cn",
+      "url": "https://rsshub.app/nikkei/cn",
+      "status": "invalid",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "",
+      "http_code": -1,
+      "probe_log": [
+        "-1",
+        "429",
+        "503"
+      ],
+      "note": "公共实例 503/429/超时，未返回有效订阅流（-1,429,503）：本次未验证通过",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "数位时代 Bnext",
+      "region": "亚太",
+      "domain": "科技",
+      "rsshub_route": "/bnext",
+      "url": "https://rsshub.rssforever.com/bnext",
+      "status": "ok",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "https://rsshub.rssforever.com",
+      "http_code": 200,
+      "probe_log": [],
+      "note": "公共实例返回有效 RSS/Atom 订阅流（https://rsshub.rssforever.com, HTTP 200）",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "亚洲新闻台 · 网页版",
+      "region": "亚太",
+      "domain": "国际",
+      "rsshub_route": "/cna/web",
+      "url": "https://rsshub.app/cna/web",
+      "status": "ok",
+      "need_key": false,
+      "language": "en",
+      "probe_instance": "https://rsshub.woodland.cafe",
+      "http_code": 200,
+      "probe_log": [],
+      "note": "公共实例返回有效 RSS/Atom 订阅流（https://rsshub.woodland.cafe, HTTP 200）",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "南华早报 · 话题",
+      "region": "亚太",
+      "domain": "国际",
+      "rsshub_route": "/scmp/topic",
+      "url": "https://rsshub.app/scmp/topic",
+      "status": "invalid",
+      "need_key": false,
+      "language": "en",
+      "probe_instance": "",
+      "http_code": -1,
+      "probe_log": [
+        "-1",
+        "429",
+        "503"
+      ],
+      "note": "公共实例 503/429/超时，未返回有效订阅流（-1,429,503）：本次未验证通过",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "香港01 · 最新",
+      "region": "亚太",
+      "domain": "社会与法治",
+      "rsshub_route": "/hk01/latest",
+      "url": "https://hub.slarker.me/hk01/latest",
+      "status": "ok",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "https://hub.slarker.me",
+      "http_code": 200,
+      "probe_log": [],
+      "note": "公共实例返回有效 RSS/Atom 订阅流（https://hub.slarker.me, HTTP 200）",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "香港经济日报",
+      "region": "亚太",
+      "domain": "社会与法治",
+      "rsshub_route": "/hket",
+      "url": "https://rsshub.app/hket",
+      "status": "ok",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "https://rsshub.woodland.cafe",
+      "http_code": 200,
+      "probe_log": [],
+      "note": "公共实例返回有效 RSS/Atom 订阅流（https://rsshub.woodland.cafe, HTTP 200）",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "端传媒 · 频道",
+      "region": "亚太",
+      "domain": "社会与法治",
+      "rsshub_route": "/theinitium/channel",
+      "url": "https://rsshub.app/theinitium/channel",
+      "status": "ok",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "https://hub.slarker.me",
+      "http_code": 200,
+      "probe_log": [],
+      "note": "公共实例返回有效 RSS/Atom 订阅流（https://hub.slarker.me, HTTP 200）",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "明报",
+      "region": "亚太",
+      "domain": "社会与法治",
+      "rsshub_route": "/mingpao",
+      "url": "https://rsshub.app/mingpao",
+      "status": "invalid",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "",
+      "http_code": -1,
+      "probe_log": [
+        "429",
+        "503"
+      ],
+      "note": "公共实例 503/429/超时，未返回有效订阅流（429,503）：本次未验证通过",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "8world · 话题",
+      "region": "亚太",
+      "domain": "文体娱乐",
+      "rsshub_route": "/8world/topic",
+      "url": "https://rsshub.app/8world/topic",
+      "status": "invalid",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "",
+      "http_code": -1,
+      "probe_log": [
+        "-1",
+        "429",
+        "503"
+      ],
+      "note": "公共实例 503/429/超时，未返回有效订阅流（-1,429,503）：本次未验证通过",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "ATP 网球 · 新闻",
+      "region": "亚太",
+      "domain": "文体娱乐",
+      "rsshub_route": "/atptour/news",
+      "url": "https://rsshub.app/atptour/news",
+      "status": "invalid",
+      "need_key": false,
+      "language": "en",
+      "probe_instance": "",
+      "http_code": -1,
+      "probe_log": [
+        "-1",
+        "429",
+        "503"
+      ],
+      "note": "公共实例 503/429/超时，未返回有效订阅流（-1,429,503）：本次未验证通过",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "BBC News",
+      "region": "欧洲",
+      "domain": "时政",
+      "rsshub_route": "/bbc",
+      "url": "https://rsshub.app/bbc",
+      "status": "ok",
+      "need_key": false,
+      "language": "en",
+      "probe_instance": "https://rsshub.liumingye.cn",
+      "http_code": 200,
+      "probe_log": [
+        "200"
+      ],
+      "note": "公共实例返回有效 RSS/Atom 订阅流（https://rsshub.liumingye.cn, HTTP 200）",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "德国之声",
+      "region": "欧洲",
+      "domain": "时政",
+      "rsshub_route": "/dw/news",
+      "url": "https://hub.slarker.me/dw/news",
+      "status": "ok",
+      "need_key": false,
+      "language": "de",
+      "probe_instance": "https://hub.slarker.me",
+      "http_code": 200,
+      "probe_log": [
+        "-1",
+        "429"
+      ],
+      "note": "公共实例返回有效 RSS/Atom 订阅流（https://hub.slarker.me, HTTP 200）",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "Europa Press",
+      "region": "欧洲",
+      "domain": "时政",
+      "rsshub_route": "/europapress",
+      "url": "https://rsshub.app/europapress",
+      "status": "ok",
+      "need_key": false,
+      "language": "es",
+      "probe_instance": "https://hub.slarker.me",
+      "http_code": 200,
+      "probe_log": [
+        "-1",
+        "200",
+        "404",
+        "429",
+        "503"
+      ],
+      "note": "公共实例返回有效 RSS/Atom 订阅流（https://hub.slarker.me, HTTP 200）",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "欧洲时报中文版",
+      "region": "欧洲",
+      "domain": "时政",
+      "rsshub_route": "/europechinese/latest",
+      "url": "https://hub.slarker.me/europechinese/latest",
+      "status": "ok",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "https://hub.slarker.me",
+      "http_code": 200,
+      "probe_log": [],
+      "note": "公共实例返回有效 RSS/Atom 订阅流（https://hub.slarker.me, HTTP 200）",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "法国世界报",
+      "region": "欧洲",
+      "domain": "时政",
+      "rsshub_route": "/lemonde",
+      "url": "https://rsshub.app/lemonde",
+      "status": "ok",
+      "need_key": false,
+      "language": "fr",
+      "probe_instance": "https://rsshub.woodland.cafe",
+      "http_code": 200,
+      "probe_log": [],
+      "note": "公共实例返回有效 RSS/Atom 订阅流（https://rsshub.woodland.cafe, HTTP 200）",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "世界报 · 英语版",
+      "region": "欧洲",
+      "domain": "时政",
+      "rsshub_route": "/lemonde/en",
+      "url": "https://rsshub.app/lemonde/en",
+      "status": "ok",
+      "need_key": false,
+      "language": "en",
+      "probe_instance": "https://hub.slarker.me",
+      "http_code": 200,
+      "probe_log": [
+        "200"
+      ],
+      "note": "公共实例返回有效 RSS/Atom 订阅流（https://hub.slarker.me, HTTP 200）",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "卫报 · 社论",
+      "region": "欧洲",
+      "domain": "时政",
+      "rsshub_route": "/theguardian/editorial",
+      "url": "https://hub.slarker.me/theguardian/editorial",
+      "status": "ok",
+      "need_key": false,
+      "language": "en",
+      "probe_instance": "https://hub.slarker.me",
+      "http_code": 200,
+      "probe_log": [
+        "-1",
+        "404",
+        "429",
+        "503"
+      ],
+      "note": "公共实例返回有效 RSS/Atom 订阅流（https://hub.slarker.me, HTTP 200）",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "英国议会图书馆",
+      "region": "欧洲",
+      "domain": "时政",
+      "rsshub_route": "/parliament.uk/commonslibrary",
+      "url": "https://rsshub.app/parliament.uk/commonslibrary",
+      "status": "need_self",
+      "need_key": false,
+      "language": "en",
+      "probe_instance": "",
+      "http_code": 404,
+      "probe_log": [
+        "404",
+        "503"
+      ],
+      "note": "公共实例返回 404（hub.slarker.me、rsshub.liumingye.cn）：路由存在但未部署，需自建实例",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "BBC 中文专题",
+      "region": "欧洲",
+      "domain": "时政",
+      "rsshub_route": "/bbc/topic-zhongwen",
+      "url": "https://rsshub.app/bbc/topic-zhongwen",
+      "status": "invalid",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "",
+      "http_code": -1,
+      "probe_log": [
+        "429",
+        "503"
+      ],
+      "note": "公共实例 503/429/超时，未返回有效订阅流（429,503）：本次未验证通过",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "BBC News Labs",
+      "region": "欧洲",
+      "domain": "时政",
+      "rsshub_route": "/bbcnewslabs/news",
+      "url": "https://rsshub.app/bbcnewslabs/news",
+      "status": "invalid",
+      "need_key": false,
+      "language": "en",
+      "probe_instance": "",
+      "http_code": -1,
+      "probe_log": [
+        "-1",
+        "429",
+        "503",
+        "504"
+      ],
+      "note": "公共实例 503/429/超时，未返回有效订阅流（-1,429,503,504）：本次未验证通过",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "荷兰时报 NL Times",
+      "region": "欧洲",
+      "domain": "时政",
+      "rsshub_route": "/nltimes/news",
+      "url": "https://rsshub.app/nltimes/news",
+      "status": "invalid",
+      "need_key": false,
+      "language": "en",
+      "probe_instance": "",
+      "http_code": -1,
+      "probe_log": [
+        "-1",
+        "429",
+        "503"
+      ],
+      "note": "公共实例 503/429/超时，未返回有效订阅流（-1,429,503）：本次未验证通过",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "法国国际广播 RFI",
+      "region": "欧洲",
+      "domain": "时政",
+      "rsshub_route": "/rfi/news",
+      "url": "https://rsshub.app/rfi/news",
+      "status": "invalid",
+      "need_key": false,
+      "language": "fr",
+      "probe_instance": "",
+      "http_code": -1,
+      "probe_log": [
+        "-1",
+        "429",
+        "503"
+      ],
+      "note": "公共实例 503/429/超时，未返回有效订阅流（-1,429,503）：本次未验证通过",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "金融时报 · MyFT",
+      "region": "欧洲",
+      "domain": "财经",
+      "rsshub_route": "/ft/myft",
+      "url": "https://rsshub.app/ft/myft",
+      "status": "need_self",
+      "need_key": false,
+      "language": "en",
+      "probe_instance": "",
+      "http_code": 404,
+      "probe_log": [
+        "-1",
+        "404",
+        "429",
+        "503"
+      ],
+      "note": "公共实例返回 404（hub.slarker.me、rsshub.liumingye.cn）：路由存在但未部署，需自建实例",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "经济学人 · Espresso",
+      "region": "欧洲",
+      "domain": "财经",
+      "rsshub_route": "/economist/espresso",
+      "url": "https://rsshub.app/economist/espresso",
+      "status": "invalid",
+      "need_key": false,
+      "language": "en",
+      "probe_instance": "",
+      "http_code": -1,
+      "probe_log": [
+        "-1",
+        "429",
+        "503"
+      ],
+      "note": "公共实例 503/429/超时，未返回有效订阅流（-1,429,503）：本次未验证通过",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "经济学人 · 完整版",
+      "region": "欧洲",
+      "domain": "财经",
+      "rsshub_route": "/economist/full",
+      "url": "https://rsshub.app/economist/full",
+      "status": "invalid",
+      "need_key": false,
+      "language": "en",
+      "probe_instance": "",
+      "http_code": -1,
+      "probe_log": [
+        "429",
+        "503"
+      ],
+      "note": "公共实例 503/429/超时，未返回有效订阅流（429,503）：本次未验证通过",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "经济学人 · 全球商业评论",
+      "region": "欧洲",
+      "domain": "财经",
+      "rsshub_route": "/economist/global-business-review",
+      "url": "https://rsshub.app/economist/global-business-review",
+      "status": "invalid",
+      "need_key": false,
+      "language": "en",
+      "probe_instance": "",
+      "http_code": -1,
+      "probe_log": [
+        "-1",
+        "429",
+        "503",
+        "504"
+      ],
+      "note": "公共实例 503/429/超时，未返回有效订阅流（-1,429,503,504）：本次未验证通过",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "DL News · 分类",
+      "region": "欧洲",
+      "domain": "科技",
+      "rsshub_route": "/dlnews/category",
+      "url": "https://rsshub.app/dlnews/category",
+      "status": "invalid",
+      "need_key": false,
+      "language": "en",
+      "probe_instance": "",
+      "http_code": -1,
+      "probe_log": [
+        "-1",
+        "429",
+        "503"
+      ],
+      "note": "公共实例 503/429/超时，未返回有效订阅流（-1,429,503）：本次未验证通过",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "TechPowerUp",
+      "region": "欧洲",
+      "domain": "科技",
+      "rsshub_route": "/techpowerup",
+      "url": "https://rsshub.app/techpowerup",
+      "status": "invalid",
+      "need_key": false,
+      "language": "en",
+      "probe_instance": "",
+      "http_code": -1,
+      "probe_log": [
+        "-1",
+        "429",
+        "503"
+      ],
+      "note": "公共实例 503/429/超时，未返回有效订阅流（-1,429,503）：本次未验证通过",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "卫报 · 中国",
+      "region": "欧洲",
+      "domain": "国际",
+      "rsshub_route": "/theguardian/china",
+      "url": "https://hub.slarker.me/theguardian/china",
+      "status": "ok",
+      "need_key": false,
+      "language": "en",
+      "probe_instance": "https://hub.slarker.me",
+      "http_code": 200,
+      "probe_log": [
+        "-1",
+        "404",
+        "429",
+        "503"
+      ],
+      "note": "公共实例返回有效 RSS/Atom 订阅流（https://hub.slarker.me, HTTP 200）",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "英国议会请愿",
+      "region": "欧洲",
+      "domain": "社会与法治",
+      "rsshub_route": "/parliament.uk/petitions",
+      "url": "https://hub.slarker.me/parliament.uk/petitions",
+      "status": "ok",
+      "need_key": false,
+      "language": "en",
+      "probe_instance": "https://hub.slarker.me",
+      "http_code": 200,
+      "probe_log": [],
+      "note": "公共实例返回有效 RSS/Atom 订阅流（https://hub.slarker.me, HTTP 200）",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "Sky Sports",
+      "region": "欧洲",
+      "domain": "文体娱乐",
+      "rsshub_route": "/skysports/news",
+      "url": "https://rsshub.app/skysports/news",
+      "status": "need_self",
+      "need_key": false,
+      "language": "en",
+      "probe_instance": "",
+      "http_code": 404,
+      "probe_log": [
+        "404",
+        "503"
+      ],
+      "note": "公共实例返回 404（hub.slarker.me、rsshub.liumingye.cn）：路由存在但未部署，需自建实例",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "BBC Sport",
+      "region": "欧洲",
+      "domain": "文体娱乐",
+      "rsshub_route": "/bbc/sport",
+      "url": "https://rsshub.app/bbc/sport",
+      "status": "invalid",
+      "need_key": false,
+      "language": "en",
+      "probe_instance": "",
+      "http_code": -1,
+      "probe_log": [
+        "429",
+        "503"
+      ],
+      "note": "公共实例 503/429/超时，未返回有效订阅流（429,503）：本次未验证通过",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "美联社 · 话题",
+      "region": "北美",
+      "domain": "时政",
+      "rsshub_route": "/apnews/topics",
+      "url": "https://rsshub.app/apnews/topics",
+      "status": "ok",
+      "need_key": false,
+      "language": "en",
+      "probe_instance": "https://rsshub.liumingye.cn",
+      "http_code": 200,
+      "probe_log": [],
+      "note": "公共实例返回有效 RSS/Atom 订阅流（https://rsshub.liumingye.cn, HTTP 200）",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "纽约客",
+      "region": "北美",
+      "domain": "时政",
+      "rsshub_route": "/newyorker/news",
+      "url": "https://hub.slarker.me/newyorker/news",
+      "status": "ok",
+      "need_key": false,
+      "language": "en",
+      "probe_instance": "https://hub.slarker.me",
+      "http_code": 200,
+      "probe_log": [],
+      "note": "公共实例返回有效 RSS/Atom 订阅流（https://hub.slarker.me, HTTP 200）",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "纽约时报",
+      "region": "北美",
+      "domain": "时政",
+      "rsshub_route": "/nytimes",
+      "url": "https://rsshub.woodland.cafe/nytimes",
+      "status": "ok",
+      "need_key": false,
+      "language": "en",
+      "probe_instance": "https://rsshub.woodland.cafe",
+      "http_code": 200,
+      "probe_log": [],
+      "note": "公共实例返回有效 RSS/Atom 订阅流（https://rsshub.woodland.cafe, HTTP 200）",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "纽约时报 · 中文简报",
+      "region": "北美",
+      "domain": "时政",
+      "rsshub_route": "/nytimes/daily-briefing-chinese",
+      "url": "https://rsshub.woodland.cafe/nytimes/daily-briefing-chinese",
+      "status": "ok",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "https://rsshub.woodland.cafe",
+      "http_code": 200,
+      "probe_log": [],
+      "note": "公共实例返回有效 RSS/Atom 订阅流（https://rsshub.woodland.cafe, HTTP 200）",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "加拿大广播电台",
+      "region": "北美",
+      "domain": "时政",
+      "rsshub_route": "/radio-canada/latest",
+      "url": "https://hub.slarker.me/radio-canada/latest",
+      "status": "ok",
+      "need_key": false,
+      "language": "fr",
+      "probe_instance": "https://hub.slarker.me",
+      "http_code": 200,
+      "probe_log": [],
+      "note": "公共实例返回有效 RSS/Atom 订阅流（https://hub.slarker.me, HTTP 200）",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "华盛顿邮报 · App",
+      "region": "北美",
+      "domain": "时政",
+      "rsshub_route": "/washingtonpost/app",
+      "url": "https://hub.slarker.me/washingtonpost/app",
+      "status": "ok",
+      "need_key": false,
+      "language": "en",
+      "probe_instance": "https://hub.slarker.me",
+      "http_code": 200,
+      "probe_log": [
+        "-1",
+        "200"
+      ],
+      "note": "公共实例返回有效 RSS/Atom 订阅流（https://hub.slarker.me, HTTP 200）",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "加拿大政府 · 新闻",
+      "region": "北美",
+      "domain": "时政",
+      "rsshub_route": "/canada.ca/news",
+      "url": "https://rsshub.app/canada.ca/news",
+      "status": "need_self",
+      "need_key": false,
+      "language": "en",
+      "probe_instance": "",
+      "http_code": 404,
+      "probe_log": [
+        "-1",
+        "404",
+        "429",
+        "503"
+      ],
+      "note": "公共实例返回 404（hub.slarker.me、rsshub.liumingye.cn）：路由存在但未部署，需自建实例",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "美联社 · RSS",
+      "region": "北美",
+      "domain": "时政",
+      "rsshub_route": "/apnews/rss",
+      "url": "https://rsshub.app/apnews/rss",
+      "status": "invalid",
+      "need_key": false,
+      "language": "en",
+      "probe_instance": "",
+      "http_code": -1,
+      "probe_log": [
+        "-1",
+        "429",
+        "503"
+      ],
+      "note": "公共实例 503/429/超时，未返回有效订阅流（-1,429,503）：本次未验证通过",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "NPR · 全文",
+      "region": "北美",
+      "domain": "时政",
+      "rsshub_route": "/npr/full",
+      "url": "https://rsshub.app/npr/full",
+      "status": "invalid",
+      "need_key": false,
+      "language": "en",
+      "probe_instance": "",
+      "http_code": -1,
+      "probe_log": [
+        "-1",
+        "429",
+        "503"
+      ],
+      "note": "公共实例 503/429/超时，未返回有效订阅流（-1,429,503）：本次未验证通过",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "大西洋月刊",
+      "region": "北美",
+      "domain": "时政",
+      "rsshub_route": "/theatlantic/news",
+      "url": "https://rsshub.app/theatlantic/news",
+      "status": "invalid",
+      "need_key": false,
+      "language": "en",
+      "probe_instance": "",
+      "http_code": -1,
+      "probe_log": [
+        "-1",
+        "429",
+        "503"
+      ],
+      "note": "公共实例 503/429/超时，未返回有效订阅流（-1,429,503）：本次未验证通过",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "彭博社",
+      "region": "北美",
+      "domain": "财经",
+      "rsshub_route": "/bloomberg",
+      "url": "https://rsshub.woodland.cafe/bloomberg",
+      "status": "ok",
+      "need_key": false,
+      "language": "en",
+      "probe_instance": "https://rsshub.woodland.cafe",
+      "http_code": 200,
+      "probe_log": [],
+      "note": "公共实例返回有效 RSS/Atom 订阅流（https://rsshub.woodland.cafe, HTTP 200）",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "CNBC · RSS",
+      "region": "北美",
+      "domain": "财经",
+      "rsshub_route": "/cnbc/rss",
+      "url": "https://hub.slarker.me/cnbc/rss",
+      "status": "ok",
+      "need_key": false,
+      "language": "en",
+      "probe_instance": "https://hub.slarker.me",
+      "http_code": 200,
+      "probe_log": [],
+      "note": "公共实例返回有效 RSS/Atom 订阅流（https://hub.slarker.me, HTTP 200）",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "华尔街日报 · 新闻",
+      "region": "北美",
+      "domain": "财经",
+      "rsshub_route": "/wsj/news",
+      "url": "https://rsshub.app/wsj/news",
+      "status": "invalid",
+      "need_key": false,
+      "language": "en",
+      "probe_instance": "",
+      "http_code": -1,
+      "probe_log": [
+        "429",
+        "503"
+      ],
+      "note": "公共实例 503/429/超时，未返回有效订阅流（429,503）：本次未验证通过",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "Hacker News",
+      "region": "北美",
+      "domain": "科技",
+      "rsshub_route": "/hackernews",
+      "url": "https://hub.slarker.me/hackernews",
+      "status": "ok",
+      "need_key": false,
+      "language": "en",
+      "probe_instance": "https://hub.slarker.me",
+      "http_code": 200,
+      "probe_log": [
+        "-1",
+        "200"
+      ],
+      "note": "公共实例返回有效 RSS/Atom 订阅流（https://hub.slarker.me, HTTP 200）",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "TechCrunch · 新闻",
+      "region": "北美",
+      "domain": "科技",
+      "rsshub_route": "/techcrunch/news",
+      "url": "https://hub.slarker.me/techcrunch/news",
+      "status": "ok",
+      "need_key": false,
+      "language": "en",
+      "probe_instance": "https://hub.slarker.me",
+      "http_code": 200,
+      "probe_log": [
+        "-1",
+        "429"
+      ],
+      "note": "公共实例返回有效 RSS/Atom 订阅流（https://hub.slarker.me, HTTP 200）",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "TechCrunch · 分类",
+      "region": "北美",
+      "domain": "科技",
+      "rsshub_route": "/techcrunch/category",
+      "url": "https://rsshub.app/techcrunch/category",
+      "status": "need_self",
+      "need_key": false,
+      "language": "en",
+      "probe_instance": "",
+      "http_code": 404,
+      "probe_log": [
+        "404",
+        "503"
+      ],
+      "note": "公共实例返回 404（hub.slarker.me、rsshub.liumingye.cn）：路由存在但未部署，需自建实例",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "Wired · 标签",
+      "region": "北美",
+      "domain": "科技",
+      "rsshub_route": "/wired/tag",
+      "url": "https://rsshub.app/wired/tag",
+      "status": "need_self",
+      "need_key": false,
+      "language": "en",
+      "probe_instance": "",
+      "http_code": 404,
+      "probe_log": [
+        "404",
+        "503"
+      ],
+      "note": "公共实例返回 404（hub.slarker.me、rsshub.liumingye.cn）：路由存在但未部署，需自建实例",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "Wired · 分类",
+      "region": "北美",
+      "domain": "科技",
+      "rsshub_route": "/wired/types",
+      "url": "https://rsshub.app/wired/types",
+      "status": "need_self",
+      "need_key": false,
+      "language": "en",
+      "probe_instance": "",
+      "http_code": 404,
+      "probe_log": [
+        "404",
+        "503"
+      ],
+      "note": "公共实例返回 404（hub.slarker.me、rsshub.liumingye.cn）：路由存在但未部署，需自建实例",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "The Verge",
+      "region": "北美",
+      "domain": "科技",
+      "rsshub_route": "/theverge",
+      "url": "https://rsshub.app/theverge",
+      "status": "invalid",
+      "need_key": false,
+      "language": "en",
+      "probe_instance": "",
+      "http_code": -1,
+      "probe_log": [
+        "-1",
+        "429",
+        "503"
+      ],
+      "note": "公共实例 503/429/超时，未返回有效订阅流（-1,429,503）：本次未验证通过",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "美国之音 VOA",
+      "region": "北美",
+      "domain": "国际",
+      "rsshub_route": "/voanews",
+      "url": "https://rsshub.app/voanews",
+      "status": "need_self",
+      "need_key": false,
+      "language": "en",
+      "probe_instance": "",
+      "http_code": 404,
+      "probe_log": [
+        "404",
+        "503"
+      ],
+      "note": "公共实例返回 404（hub.slarker.me、rsshub.liumingye.cn）：路由存在但未部署，需自建实例",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "ESPN · 新闻",
+      "region": "北美",
+      "domain": "文体娱乐",
+      "rsshub_route": "/espn/news",
+      "url": "https://rsshub.app/espn/news",
+      "status": "need_self",
+      "need_key": false,
+      "language": "en",
+      "probe_instance": "",
+      "http_code": 404,
+      "probe_log": [
+        "404",
+        "503"
+      ],
+      "note": "公共实例返回 404（hub.slarker.me、rsshub.liumingye.cn）：路由存在但未部署，需自建实例",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "纽约时报 · 书评",
+      "region": "北美",
+      "domain": "文体娱乐",
+      "rsshub_route": "/nytimes/book",
+      "url": "https://rsshub.app/nytimes/book",
+      "status": "invalid",
+      "need_key": false,
+      "language": "en",
+      "probe_instance": "",
+      "http_code": -1,
+      "probe_log": [
+        "-1",
+        "429",
+        "503"
+      ],
+      "note": "公共实例 503/429/超时，未返回有效订阅流（-1,429,503）：本次未验证通过",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "Grist 环境新闻",
+      "region": "北美",
+      "domain": "环境与科学",
+      "rsshub_route": "/grist/featured",
+      "url": "https://rsshub.woodland.cafe/grist/featured",
+      "status": "ok",
+      "need_key": false,
+      "language": "en",
+      "probe_instance": "https://rsshub.woodland.cafe",
+      "http_code": 200,
+      "probe_log": [],
+      "note": "公共实例返回有效 RSS/Atom 订阅流（https://rsshub.woodland.cafe, HTTP 200）",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "NASA · 天文每日一图",
+      "region": "北美",
+      "domain": "环境与科学",
+      "rsshub_route": "/nasa/apod",
+      "url": "https://rsshub.woodland.cafe/nasa/apod",
+      "status": "ok",
+      "need_key": false,
+      "language": "en",
+      "probe_instance": "https://rsshub.woodland.cafe",
+      "http_code": 200,
+      "probe_log": [
+        "-1",
+        "200"
+      ],
+      "note": "公共实例返回有效 RSS/Atom 订阅流（https://rsshub.woodland.cafe, HTTP 200）",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "国家地理 · 每日一图",
+      "region": "北美",
+      "domain": "环境与科学",
+      "rsshub_route": "/natgeo/dailyphoto",
+      "url": "https://hub.slarker.me/natgeo/dailyphoto",
+      "status": "ok",
+      "need_key": false,
+      "language": "en",
+      "probe_instance": "https://hub.slarker.me",
+      "http_code": 200,
+      "probe_log": [],
+      "note": "公共实例返回有效 RSS/Atom 订阅流（https://hub.slarker.me, HTTP 200）",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "国家地理 · 精选",
+      "region": "北美",
+      "domain": "环境与科学",
+      "rsshub_route": "/natgeo/dailyselection",
+      "url": "https://rsshub.app/natgeo/dailyselection",
+      "status": "invalid",
+      "need_key": false,
+      "language": "en",
+      "probe_instance": "",
+      "http_code": -1,
+      "probe_log": [
+        "-1",
+        "429",
+        "503"
+      ],
+      "note": "公共实例 503/429/超时，未返回有效订阅流（-1,429,503）：本次未验证通过",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "Nature · 新闻",
+      "region": "北美",
+      "domain": "环境与科学",
+      "rsshub_route": "/nature/news",
+      "url": "https://rsshub.app/nature/news",
+      "status": "invalid",
+      "need_key": false,
+      "language": "en",
+      "probe_instance": "",
+      "http_code": -1,
+      "probe_log": [
+        "-1",
+        "429",
+        "503"
+      ],
+      "note": "公共实例 503/429/超时，未返回有效订阅流（-1,429,503）：本次未验证通过",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "Nature · 研究",
+      "region": "北美",
+      "domain": "环境与科学",
+      "rsshub_route": "/nature/research",
+      "url": "https://rsshub.app/nature/research",
+      "status": "invalid",
+      "need_key": false,
+      "language": "en",
+      "probe_instance": "",
+      "http_code": -1,
+      "probe_log": [
+        "-1",
+        "429",
+        "503"
+      ],
+      "note": "公共实例 503/429/超时，未返回有效订阅流（-1,429,503）：本次未验证通过",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "Science · 当前期",
+      "region": "北美",
+      "domain": "环境与科学",
+      "rsshub_route": "/science/current",
+      "url": "https://rsshub.app/science/current",
+      "status": "invalid",
+      "need_key": false,
+      "language": "en",
+      "probe_instance": "",
+      "http_code": -1,
+      "probe_log": [
+        "-1",
+        "429",
+        "503"
+      ],
+      "note": "公共实例 503/429/超时，未返回有效订阅流（-1,429,503）：本次未验证通过",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "科学美国人 · 播客",
+      "region": "北美",
+      "domain": "环境与科学",
+      "rsshub_route": "/scientificamerican/podcast",
+      "url": "https://rsshub.app/scientificamerican/podcast",
+      "status": "invalid",
+      "need_key": false,
+      "language": "en",
+      "probe_instance": "",
+      "http_code": -1,
+      "probe_log": [
+        "-1",
+        "429",
+        "503"
+      ],
+      "note": "公共实例 503/429/超时，未返回有效订阅流（-1,429,503）：本次未验证通过",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "半岛电视台",
+      "region": "中东与非洲",
+      "domain": "时政",
+      "rsshub_route": "/aljazeera",
+      "url": "https://rsshub.app/aljazeera",
+      "status": "ok",
+      "need_key": false,
+      "language": "en",
+      "probe_instance": "https://rsshub.liumingye.cn",
+      "http_code": 200,
+      "probe_log": [
+        "-1",
+        "200"
+      ],
+      "note": "公共实例返回有效 RSS/Atom 订阅流（https://rsshub.liumingye.cn, HTTP 200）",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "半岛电视台 · RSS",
+      "region": "中东与非洲",
+      "domain": "时政",
+      "rsshub_route": "/aljazeera/rss",
+      "url": "https://rsshub.app/aljazeera/rss",
+      "status": "invalid",
+      "need_key": false,
+      "language": "en",
+      "probe_instance": "",
+      "http_code": -1,
+      "probe_log": [
+        "-1",
+        "429",
+        "503"
+      ],
+      "note": "公共实例 503/429/超时，未返回有效订阅流（-1,429,503）：本次未验证通过",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "半岛电视台 · 标签",
+      "region": "中东与非洲",
+      "domain": "时政",
+      "rsshub_route": "/aljazeera/tag",
+      "url": "https://rsshub.app/aljazeera/tag",
+      "status": "invalid",
+      "need_key": false,
+      "language": "en",
+      "probe_instance": "",
+      "http_code": -1,
+      "probe_log": [
+        "-1",
+        "429",
+        "503"
+      ],
+      "note": "公共实例 503/429/超时，未返回有效订阅流（-1,429,503）：本次未验证通过",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "科威特印度人报",
+      "region": "中东与非洲",
+      "domain": "时政",
+      "rsshub_route": "/indiansinkuwait/latest",
+      "url": "https://rsshub.app/indiansinkuwait/latest",
+      "status": "invalid",
+      "need_key": false,
+      "language": "en",
+      "probe_instance": "",
+      "http_code": -1,
+      "probe_log": [
+        "-1",
+        "429",
+        "503"
+      ],
+      "note": "公共实例 503/429/超时，未返回有效订阅流（-1,429,503）：本次未验证通过",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "俄罗斯卫星通讯社",
+      "region": "全球",
+      "domain": "时政",
+      "rsshub_route": "/sputniknews",
+      "url": "https://rsshub.app/sputniknews",
+      "status": "ok",
+      "need_key": false,
+      "language": "ru",
+      "probe_instance": "https://rsshub.liumingye.cn",
+      "http_code": 200,
+      "probe_log": [],
+      "note": "公共实例返回有效 RSS/Atom 订阅流（https://rsshub.liumingye.cn, HTTP 200）",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "联合国 · 安理会表决",
+      "region": "全球",
+      "domain": "时政",
+      "rsshub_route": "/un/scveto",
+      "url": "https://hub.slarker.me/un/scveto",
+      "status": "ok",
+      "need_key": false,
+      "language": "en",
+      "probe_instance": "https://hub.slarker.me",
+      "http_code": 200,
+      "probe_log": [
+        "-1",
+        "404",
+        "429",
+        "503"
+      ],
+      "note": "公共实例返回有效 RSS/Atom 订阅流（https://hub.slarker.me, HTTP 200）",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "干净世界 · 文章",
+      "region": "全球",
+      "domain": "时政",
+      "rsshub_route": "/ganjingworld/channel/articles",
+      "url": "https://rsshub.app/ganjingworld/channel/articles",
+      "status": "need_self",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "",
+      "http_code": 404,
+      "probe_log": [
+        "404",
+        "503"
+      ],
+      "note": "公共实例返回 404（hub.slarker.me、rsshub.liumingye.cn）：路由存在但未部署，需自建实例",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "维基新闻",
+      "region": "全球",
+      "domain": "时政",
+      "rsshub_route": "/wikinews",
+      "url": "https://rsshub.app/wikinews",
+      "status": "need_self",
+      "need_key": false,
+      "language": "en",
+      "probe_instance": "",
+      "http_code": 404,
+      "probe_log": [
+        "404",
+        "503"
+      ],
+      "note": "公共实例返回 404（hub.slarker.me、rsshub.liumingye.cn）：路由存在但未部署，需自建实例",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "纽约时报 · RSS",
+      "region": "全球",
+      "domain": "时政",
+      "rsshub_route": "/nytimes/rss",
+      "url": "https://rsshub.app/nytimes/rss",
+      "status": "invalid",
+      "need_key": false,
+      "language": "en",
+      "probe_instance": "",
+      "http_code": -1,
+      "probe_log": [
+        "429",
+        "503"
+      ],
+      "note": "公共实例 503/429/超时，未返回有效订阅流（429,503）：本次未验证通过",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "路透社 · 调查报道",
+      "region": "全球",
+      "domain": "时政",
+      "rsshub_route": "/reuters/investigates",
+      "url": "https://rsshub.app/reuters/investigates",
+      "status": "invalid",
+      "need_key": false,
+      "language": "en",
+      "probe_instance": "",
+      "http_code": -1,
+      "probe_log": [
+        "-1",
+        "429",
+        "503"
+      ],
+      "note": "公共实例 503/429/超时，未返回有效订阅流（-1,429,503）：本次未验证通过",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "标普全球评级",
+      "region": "全球",
+      "domain": "财经",
+      "rsshub_route": "/spglobal/ratings",
+      "url": "https://rsshub.app/spglobal/ratings",
+      "status": "invalid",
+      "need_key": false,
+      "language": "en",
+      "probe_instance": "",
+      "http_code": -1,
+      "probe_log": [
+        "-1",
+        "429",
+        "503"
+      ],
+      "note": "公共实例 503/429/超时，未返回有效订阅流（-1,429,503）：本次未验证通过",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "MIT 科技评论",
+      "region": "全球",
+      "domain": "科技",
+      "rsshub_route": "/technologyreview",
+      "url": "https://rsshub.woodland.cafe/technologyreview",
+      "status": "ok",
+      "need_key": false,
+      "language": "en",
+      "probe_instance": "https://rsshub.woodland.cafe",
+      "http_code": 200,
+      "probe_log": [],
+      "note": "公共实例返回有效 RSS/Atom 订阅流（https://rsshub.woodland.cafe, HTTP 200）",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "arXiv · 检索",
+      "region": "全球",
+      "domain": "科技",
+      "rsshub_route": "/arxiv/query",
+      "url": "https://rsshub.app/arxiv/query",
+      "status": "need_self",
+      "need_key": false,
+      "language": "en",
+      "probe_instance": "",
+      "http_code": 404,
+      "probe_log": [
+        "-1",
+        "404",
+        "429",
+        "503"
+      ],
+      "note": "公共实例返回 404（rsshub.liumingye.cn）：路由存在但未部署，需自建实例",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "GitHub · Trending",
+      "region": "全球",
+      "domain": "科技",
+      "rsshub_route": "/github/trending",
+      "url": "https://rsshub.app/github/trending",
+      "status": "need_self",
+      "need_key": false,
+      "language": "en",
+      "probe_instance": "",
+      "http_code": 404,
+      "probe_log": [
+        "404",
+        "503"
+      ],
+      "note": "公共实例返回 404（hub.slarker.me、rsshub.liumingye.cn）：路由存在但未部署，需自建实例",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "Stratechery",
+      "region": "全球",
+      "domain": "科技",
+      "rsshub_route": "/stratechery",
+      "url": "https://rsshub.app/stratechery",
+      "status": "invalid",
+      "need_key": false,
+      "language": "en",
+      "probe_instance": "",
+      "http_code": -1,
+      "probe_log": [
+        "-1",
+        "429",
+        "503"
+      ],
+      "note": "公共实例 503/429/超时，未返回有效订阅流（-1,429,503）：本次未验证通过",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "Towards Data Science",
+      "region": "全球",
+      "domain": "科技",
+      "rsshub_route": "/towardsdatascience/latest",
+      "url": "https://rsshub.app/towardsdatascience/latest",
+      "status": "invalid",
+      "need_key": false,
+      "language": "en",
+      "probe_instance": "",
+      "http_code": -1,
+      "probe_log": [
+        "-1",
+        "429",
+        "503"
+      ],
+      "note": "公共实例 503/429/超时，未返回有效订阅流（-1,429,503）：本次未验证通过",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "世界卫生组织 · 新闻",
+      "region": "全球",
+      "domain": "国际",
+      "rsshub_route": "/who/news",
+      "url": "https://rsshub.app/who/news",
+      "status": "ok",
+      "need_key": false,
+      "language": "en",
+      "probe_instance": "https://rsshub.woodland.cafe",
+      "http_code": 200,
+      "probe_log": [
+        "-1",
+        "429"
+      ],
+      "note": "公共实例返回有效 RSS/Atom 订阅流（https://rsshub.woodland.cafe, HTTP 200）",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "世界卫生组织 · 新闻稿",
+      "region": "全球",
+      "domain": "国际",
+      "rsshub_route": "/who/news-room",
+      "url": "https://rsshub.woodland.cafe/who/news-room",
+      "status": "ok",
+      "need_key": false,
+      "language": "en",
+      "probe_instance": "https://rsshub.woodland.cafe",
+      "http_code": 200,
+      "probe_log": [
+        "-1",
+        "429"
+      ],
+      "note": "公共实例返回有效 RSS/Atom 订阅流（https://rsshub.woodland.cafe, HTTP 200）",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "路透社 · 综合",
+      "region": "全球",
+      "domain": "国际",
+      "rsshub_route": "/reuters/common",
+      "url": "https://rsshub.app/reuters/common",
+      "status": "invalid",
+      "need_key": false,
+      "language": "en",
+      "probe_instance": "",
+      "http_code": -1,
+      "probe_log": [
+        "-1",
+        "429",
+        "503"
+      ],
+      "note": "公共实例 503/429/超时，未返回有效订阅流（-1,429,503）：本次未验证通过",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "ScienceDirect · 当前期",
+      "region": "全球",
+      "domain": "环境与科学",
+      "rsshub_route": "/sciencedirect/current-issue",
+      "url": "https://rsshub.app/sciencedirect/current-issue",
+      "status": "need_self",
+      "need_key": false,
+      "language": "en",
+      "probe_instance": "",
+      "http_code": 404,
+      "probe_log": [
+        "404",
+        "503"
+      ],
+      "note": "公共实例返回 404（hub.slarker.me、rsshub.liumingye.cn）：路由存在但未部署，需自建实例",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "Nature · 亮点",
+      "region": "全球",
+      "domain": "环境与科学",
+      "rsshub_route": "/nature/highlight",
+      "url": "https://rsshub.app/nature/highlight",
+      "status": "invalid",
+      "need_key": false,
+      "language": "en",
+      "probe_instance": "",
+      "http_code": -1,
+      "probe_log": [
+        "-1",
+        "429",
+        "503"
+      ],
+      "note": "公共实例 503/429/超时，未返回有效订阅流（-1,429,503）：本次未验证通过",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "Science · 封面",
+      "region": "全球",
+      "domain": "环境与科学",
+      "rsshub_route": "/science/cover",
+      "url": "https://rsshub.app/science/cover",
+      "status": "invalid",
+      "need_key": false,
+      "language": "en",
+      "probe_instance": "",
+      "http_code": -1,
+      "probe_log": [
+        "-1",
+        "429",
+        "503"
+      ],
+      "note": "公共实例 503/429/超时，未返回有效订阅流（-1,429,503）：本次未验证通过",
+      "verified_at": "2026-09-15"
+    },
+    {
+      "name": "BBC News（英）",
+      "region": "国外",
+      "domain": "feeds.bbci.co.uk",
+      "url": "https://rsshub.rssforever.com/bbc",
+      "status": "ok",
+      "language": "en",
+      "category": null
+    },
+    {
+      "name": "卫报（英）",
+      "region": "国外",
+      "domain": "www.theguardian.com",
+      "url": "https://rsshub.woodland.cafe/theguardian/china",
+      "status": "ok",
+      "language": "en",
+      "category": null
+    },
+    {
+      "name": "纽约时报（英）",
+      "region": "国外",
+      "domain": "rss.nytimes.com",
+      "url": "https://rsshub.woodland.cafe/nytimes",
+      "status": "ok",
+      "language": "en",
+      "category": null
+    },
+    {
+      "name": "华盛顿邮报（英）",
+      "region": "国外",
+      "domain": "feeds.washingtonpost.com",
+      "url": "https://rsshub.woodland.cafe/washingtonpost/app",
+      "status": "ok",
+      "language": "en",
+      "category": null
+    },
+    {
+      "name": "法国世界报（法）",
+      "region": "国外",
+      "domain": "www.lemonde.fr",
+      "url": "https://rsshub.woodland.cafe/lemonde",
+      "status": "ok",
+      "language": "fr",
+      "category": null
+    },
+    {
+      "name": "Grist 环境新闻（英）",
+      "region": "国外",
+      "domain": "grist.org",
+      "url": "https://grist.org/feed/",
+      "status": "ok",
+      "language": "en",
+      "category": null
+    },
+    {
+      "name": "Carbon Brief 气候简报（英）",
+      "region": "国外",
+      "domain": "www.carbonbrief.org",
+      "url": "https://www.carbonbrief.org/feed/",
+      "status": "ok",
+      "language": "en",
+      "category": null
+    },
+    {
+      "name": "Electrek 清洁能源（英）",
+      "region": "国外",
+      "domain": "electrek.co",
+      "url": "https://electrek.co/feed/",
+      "status": "ok",
+      "language": "en",
+      "category": null
+    },
+    {
+      "name": "中国新闻网 · 社会",
+      "region": "中国",
+      "domain": "社会",
+      "rsshub_route": "官方RSS /rss/society.xml",
+      "url": "https://www.chinanews.com.cn/rss/society.xml",
+      "status": "ok",
+      "need_key": false,
+      "language": "zh",
+      "probe_instance": "官方站点",
+      "http_code": 200,
+      "probe_log": [],
+      "note": "官方频道 RSS，实测 HTTP 200 返回有效 RSS（2026-09-17）",
+      "verified_at": "2026-09-17"
+    }
+  ]
+}

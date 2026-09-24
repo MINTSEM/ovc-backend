@@ -1,0 +1,34 @@
+# ============================================================
+# 东广视 AI 解读后端 server.py 云端部署依赖清单
+# 生成时间：2026-09-24
+# 依据：server.py + scheduler.py + source_search.py + perspectives.py 全部 import 提取
+# 安装：pip install -r requirements.txt
+# ============================================================
+
+# --- Web 框架与实时通信 ---
+Flask>=3.0.0
+flask-socketio>=5.3.0
+# werkzeug 随 Flask 自动安装（server.py 使用了 werkzeug.middleware.proxy_fix / secure_filename）
+
+# --- 图像处理（头像/背景/横幅上传裁剪）---
+Pillow>=10.0.0
+
+# --- 数据库 ---
+# server.py 默认使用 SQLite（bird.db，标准库内置，无需额外安装）
+# 仅当设置 DATABASE_URL 走 PostgreSQL 时需要 psycopg2；云主机用 binary 版避免编译
+psycopg2-binary>=2.9.9
+
+# --- 加解密与签名（登录会话/安全模块）---
+cryptography>=42.0.0
+ecdsa>=0.18.0
+cbor2>=5.5.0
+
+# --- 调度抓取模块 scheduler.py 依赖 ---
+beautifulsoup4>=4.12.0
+feedparser>=6.0.0
+requests>=2.31.0
+urllib3>=2.0.0
+
+# --- 生产 WSGI（可选：免费云主机直接 python server.py 亦可，见部署说明）---
+gunicorn>=21.2.0
+（内容由AI生成，仅供参考）
