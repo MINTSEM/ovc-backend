@@ -31,6 +31,5 @@ urllib3>=2.0.0
 
 # --- 生产 WSGI（可选：免费云主机直接 python server.py 亦可，见部署说明）---
 gunicorn>=21.2.0
-（内容由AI生成，仅供参考）
 
 lxml>=4.9.0
