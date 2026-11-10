@@ -15624,11 +15624,33 @@ _DIGEST_CACHE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'di
 # 缓存跨天复用窗口（天）：当天无缓存时回退到该窗口内最新的同名时段缓存
 _DIGEST_CACHE_LOOKBACK_DAYS = 3
 
+# 速览统一按北京时间（UTC+8）计算日期与时段，不依赖容器本地时区（线上容器为 UTC）
+try:
+    from datetime import timezone as _dt_tz
+    _DIGEST_TZ = _dt_tz(timedelta(hours=8))
+except Exception:
+    _DIGEST_TZ = None
+
+
+def _digest_now():
+    """当前北京时间 datetime（不依赖容器 TZ）。"""
+    return datetime.now(_DIGEST_TZ) if _DIGEST_TZ is not None else datetime.now()
+
+
+def _digest_today_str():
+    """北京时间的当天日期串 YYYYMMDD。"""
+    return _digest_now().strftime('%Y%m%d')
+
+
+def _digest_hour_now():
+    """北京时间的当前小时。"""
+    return _digest_now().hour
+
 
 def _digest_cache_path(hour):
     """速览缓存文件路径：按日期/时段命名（digest_YYYYMMDD_HH.json），支持多时段共存。"""
     try:
-        day = time.strftime('%Y%m%d', time.localtime())
+        day = _digest_today_str()
     except Exception:
         day = 'unknown'
     return os.path.join(_DIGEST_CACHE_DIR, 'digest_%s_%02d.json' % (day, int(hour or 0)))
@@ -15653,23 +15675,23 @@ def _digest_read_cache(hour):
             return None
         pat = re.compile(r'^digest_(\d{8})_(\d{2})\.json$')
         best = None
-        today = time.strftime('%Y%m%d', time.localtime())
+        today = _digest_today_str()
         for fn in os.listdir(_DIGEST_CACHE_DIR):
             m = pat.match(fn)
             if not m or int(m.group(2)) != int(hour or 0):
                 continue
             day = m.group(1)
-            if day > today:            # 忽略未来日期文件
-                continue
             try:
                 age = (time.mktime(time.strptime(today, '%Y%m%d')) -
                        time.mktime(time.strptime(day, '%Y%m%d'))) / 86400.0
             except Exception:
                 continue
-            if age > _DIGEST_CACHE_LOOKBACK_DAYS:
+            # 容忍未来日期文件（脚本与容器时区差异可能造成），窗口内按距离排序
+            if abs(age) > _DIGEST_CACHE_LOOKBACK_DAYS:
                 continue
-            if best is None or day > best[0]:
-                best = (day, os.path.join(_DIGEST_CACHE_DIR, fn))
+            rank = (abs(age), 0 if age >= 0 else 1)
+            if best is None or rank < best[0]:
+                best = (rank, os.path.join(_DIGEST_CACHE_DIR, fn))
         if not best:
             return None
         with open(best[1], 'r', encoding='utf-8') as f:
@@ -15746,10 +15768,10 @@ _SRC_ZH_MAP = {
 
 
 def _digest_date_prefix(ts):
-    """Unix 时间戳 → '10月20日 ' 日期前缀（速览标题要素之一）。"""
+    """Unix 时间戳 → '10月20日 ' 日期前缀（速览标题要素之一，按北京时间）。"""
     try:
-        t = time.localtime(ts)
-        return '%d月%d日 ' % (t.tm_mon, t.tm_mday)
+        t = datetime.fromtimestamp(float(ts), _DIGEST_TZ) if _DIGEST_TZ is not None else datetime.fromtimestamp(float(ts))
+        return '%d月%d日 ' % (t.month, t.day)
     except Exception:
         return ''
 
@@ -15863,7 +15885,7 @@ def _news_digest(db, limit=8, days=7, hour=None):
     每组取代表性信源标题作为重写后标题，摘要取组内最完整，来源合并展示。
     hour 为空时使用当前小时；无命中时段返回空列表。
     """
-    hour = int(time.strftime('%H', time.localtime())) if hour is None else int(hour)
+    hour = _digest_hour_now() if hour is None else int(hour)
     rule = _DIGEST_HOUR_RULES.get(hour)
     if not rule:
         return hour, '', []
@@ -16011,9 +16033,9 @@ def api_news_digest():
     db = get_db()
     try:
         hour_arg = request.args.get('hour')
-        hour = int(hour_arg) if str(hour_arg or '').strip().isdigit() else int(time.strftime('%H', time.localtime()))
+        hour = int(hour_arg) if str(hour_arg or '').strip().isdigit() else _digest_hour_now()
     except Exception:
-        hour = int(time.strftime('%H', time.localtime()))
+        hour = _digest_hour_now()
     cached = _digest_read_cache(hour)
     if cached and isinstance(cached.get('digest'), list):
         return jsonify({
@@ -16042,9 +16064,9 @@ def api_news_digest_write():
     db = get_db()
     try:
         hour_arg = request.args.get('hour') or (request.get_json(silent=True) or {}).get('hour')
-        hour = int(hour_arg) if str(hour_arg or '').strip().isdigit() else int(time.strftime('%H', time.localtime()))
+        hour = int(hour_arg) if str(hour_arg or '').strip().isdigit() else _digest_hour_now()
     except Exception:
-        hour = int(time.strftime('%H', time.localtime()))
+        hour = _digest_hour_now()
     try:
         hour_r, label, items = _news_digest(db, hour=hour)
         path = _digest_write_cache(hour_r, label, items)
