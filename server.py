@@ -15621,6 +15621,8 @@ def _clean_keyword_text(text):
     return s
 
 _DIGEST_CACHE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'digest_cache')
+# 缓存跨天复用窗口（天）：当天无缓存时回退到该窗口内最新的同名时段缓存
+_DIGEST_CACHE_LOOKBACK_DAYS = 3
 
 
 def _digest_cache_path(hour):
@@ -15633,12 +15635,44 @@ def _digest_cache_path(hour):
 
 
 def _digest_read_cache(hour):
-    """读取当天指定时段的速览缓存；不存在或解析失败返回 None。"""
+    """读取指定时段的速览缓存。
+
+    优先读当天缓存；当天缺失时回退到最近 _DIGEST_CACHE_LOOKBACK_DAYS 天内最新的
+    同名时段缓存（本地 Qwen 预生成的缓存可跨天复用，避免隔天退化回实时抓取）。
+    """
     try:
         p = _digest_cache_path(hour)
-        if not os.path.exists(p):
+        if os.path.exists(p):
+            with open(p, 'r', encoding='utf-8') as f:
+                return json.load(f)
+    except Exception:
+        pass
+    # 跨天回退：按日期倒序取最近的同名时段缓存
+    try:
+        if not os.path.isdir(_DIGEST_CACHE_DIR):
             return None
-        with open(p, 'r', encoding='utf-8') as f:
+        pat = re.compile(r'^digest_(\d{8})_(\d{2})\.json$')
+        best = None
+        today = time.strftime('%Y%m%d', time.localtime())
+        for fn in os.listdir(_DIGEST_CACHE_DIR):
+            m = pat.match(fn)
+            if not m or int(m.group(2)) != int(hour or 0):
+                continue
+            day = m.group(1)
+            if day > today:            # 忽略未来日期文件
+                continue
+            try:
+                age = (time.mktime(time.strptime(today, '%Y%m%d')) -
+                       time.mktime(time.strptime(day, '%Y%m%d'))) / 86400.0
+            except Exception:
+                continue
+            if age > _DIGEST_CACHE_LOOKBACK_DAYS:
+                continue
+            if best is None or day > best[0]:
+                best = (day, os.path.join(_DIGEST_CACHE_DIR, fn))
+        if not best:
+            return None
+        with open(best[1], 'r', encoding='utf-8') as f:
             return json.load(f)
     except Exception:
         return None
