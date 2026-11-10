@@ -11096,10 +11096,59 @@ def api_get_news_categories():
 
 
 # ==========================================================================
-# 顶栏三行：股市 / 天气 / 快讯（后端代理 + 内存缓存，避免前端直连 API 跨域/限流）
+# 顶栏多行：股市 / 天气 / 快讯 / 空气质量 / 铁路余票 / 海洋
+# （后端代理 + 内存缓存，避免前端直连 API 跨域/限流）
 # ==========================================================================
 _TOPBAR_CACHE = {}
-_TOPBAR_TTL = {'stock': 60, 'weather': 900, 'flash': 60}
+# TTL：stock 60s / weather 900s / flash 60s；air 900s(15min) / rail 60s / ocean 1800s(30min)
+_TOPBAR_TTL = {'stock': 60, 'weather': 900, 'flash': 60, 'air': 900, 'rail': 60, 'ocean': 1800}
+
+# ---- 新增模块配置常量（空气质量 / 铁路余票 / 海洋） ----
+# 空气质量：中国环境监测总站 CNEMC 官方实时发布接口（无 token）；_AIR_CITIES 为城市中文名，与国控站点 Area 字段匹配
+# 海洋：Open-Meteo Marine API（无 token，与天气同架构）；_OCEAN_CITIES 为沿海城市（纬度, 经度）
+# 常用站点：12306 站码映射（查询区间与站码翻译用），站码已按 station_name.js 核验
+_RAIL_STATIONS = {
+    'BJP': '北京', 'VNP': '北京南', 'BXP': '北京西',
+    'SHH': '上海', 'AOH': '上海虹桥', 'SNH': '上海南',
+    'GZQ': '广州', 'IOQ': '深圳北', 'SZQ': '深圳',
+    'HGH': '杭州东', 'HZH': '杭州', 'NKH': '南京南', 'NJH': '南京',
+    'CDW': '成都', 'CQW': '重庆', 'WHN': '武汉', 'WCN': '武昌',
+    'CSQ': '长沙', 'XAY': '西安', 'TYV': '太原', 'ZAF': '郑州东',
+    'JNK': '济南', 'SYT': '沈阳', 'DLT': '大连', 'QDK': '青岛',
+    'HBB': '哈尔滨', 'CCT': '长春', 'WAR': '乌鲁木齐', 'LZJ': '兰州',
+    'XNO': '西宁', 'YIJ': '银川', 'HHC': '呼和浩特',
+    'FZS': '福州', 'XMS': '厦门', 'KMM': '昆明', 'GIW': '贵阳',
+    'NNZ': '南宁', 'VUQ': '海口', 'LSO': '拉萨', 'SZH': '苏州',
+    'XJA': '香港西九龙',
+    'IMH': '上海松江', 'GBQ': '广州北', 'XWQ': '广州新塘',
+    'FTP': '北京丰台', 'GBA': '广州白云', 'IZQ': '广州南', 'EGH': '金山北',
+    'WXH': '无锡', 'WGH': '无锡东', 'CZH': '常州', 'ESH': '常州北',
+    'ZJH': '镇江', 'KNH': '昆山南', 'EPH': '嘉兴南', 'VZH': '湖州',
+    'SSH': '绍兴东', 'NGH': '宁波', 'VRH': '温州南', 'TEU': '台州',
+    'YWH': '义乌', 'JBH': '金华', 'SRG': '上饶', 'NXG': '南昌西',
+    'NCG': '南昌', 'CWQ': '长沙南', 'HVQ': '衡阳东', 'ZAQ': '株洲西',
+    'ICQ': '郴州西', 'SNQ': '韶关', 'QBQ': '清远', 'FSQ': '佛山',
+    'FCQ': '肇庆东', 'RTQ': '东莞', 'KNA': '惠州南', 'OGQ': '汕尾',
+    'CBQ': '潮汕', 'XKS': '厦门北', 'FYS': '福州南', 'QYS': '泉州',
+    'ENH': '合肥南', 'UUH': '徐州东', 'JGK': '济南西', 'SJP': '石家庄',
+    'TJP': '天津', 'TXP': '天津西', 'BMP': '保定东', 'HPP': '邯郸东',
+}
+# 空气质量监测城市（CNEMC 返回的 Area 字段城市名，需与国控站点完全一致）
+_AIR_CITIES = [
+    '北京', '上海', '广州', '深圳', '成都',
+    '西安', '武汉', '杭州', '南京', '重庆',
+]
+# 海洋监测城市（Open-Meteo Marine 坐标：城市名, 纬度, 经度）
+_OCEAN_CITIES = [
+    ('舟山', 29.9, 122.2), ('青岛', 36.1, 120.3), ('厦门', 24.5, 118.1),
+    ('大连', 38.9, 121.6), ('三亚', 18.2, 109.5),
+]
+# 铁路余票查询区间（from_station, to_station，12306 站码）
+_RAIL_ROUTES = [
+    ('BJP', 'SHH'), ('BJP', 'GZQ'), ('SHH', 'SZQ'),
+]
+_RAIL_MIN_INTERVAL = 3.0  # 12306 请求间隔下限（秒），避免触发限流
+_RAIL_LAST_REQ = 0.0
 
 # 行情标的 —— 主数据源：fx678 汇通网行情接口（api-q.fx678img.com/exchangeSymbol.php）
 # 股指 9 + 期市 9 + 汇市 9 + 黄金 9 + 原油 9 = 45（9 的倍数，5 组 × 9，对应 fx678 股指/期市/汇市/黄金/原油分类）
@@ -11422,6 +11471,204 @@ def _fetch_flash_news():
     return {'ok': True, 'items': items, 'ts': time.strftime('%H:%M:%S')}
 
 
+# --------------------------------------------------------------------------
+# 新增模块抓取：空气质量 / 铁路余票 / 海洋 / 民航
+# --------------------------------------------------------------------------
+_AQI_LEVELS = [
+    (0, '优'), (51, '良'), (101, '轻度污染'), (151, '中度污染'),
+    (201, '重度污染'), (301, '严重污染'),
+]
+
+
+def _aqi_level(aqi):
+    try:
+        a = int(aqi)
+    except (TypeError, ValueError):
+        return '--'
+    for th, name in _AQI_LEVELS:
+        if a <= th:
+            return name
+    return '严重污染'
+
+
+def _fetch_air_all():
+    """空气质量：中国环境监测总站 CNEMC 官方实时发布接口（无 token）。
+
+    POST https://air.cnemc.cn:18007/HourChangesPublish/GetAllAQIPublishLive（body 为空，
+    带 UA/Referer/X-Requested-With），返回全部国控站点 JSON（字段 Area/AQI/PM2_5/PM10/
+    SO2/NO2/O3/CO/PrimaryPollutant/Quality/TimePointStr）；按 _AIR_CITIES 过滤每城首个站点，
+    输出与 air.json 前端 schema 一致。15 分钟缓存。
+    """
+    import urllib.request as _ur
+    url = 'https://air.cnemc.cn:18007/HourChangesPublish/GetAllAQIPublishLive'
+    req = _ur.Request(
+        url,
+        data=b'',
+        headers={
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Safari/537.36',
+            'Referer': 'https://air.cnemc.cn:18007/',
+            'X-Requested-With': 'XMLHttpRequest',
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+            'Accept': 'application/json, text/javascript, */*; q=0.01',
+        },
+    )
+    try:
+        with _ur.urlopen(req, timeout=10) as resp:
+            d = json.loads(resp.read().decode('utf-8', 'ignore'))
+    except Exception:
+        return {'ok': False, 'items': [], 'error': 'CNEMC 空气质量接口请求失败'}
+    rows = d.get('result') or d.get('data') or []
+    items = []
+    for city in _AIR_CITIES:
+        for r in rows:
+            if (r.get('Area') or '') == city:
+                aqi = r.get('AQI')
+                items.append({
+                    'city': city,
+                    'aqi': aqi,
+                    'level': _aqi_level(aqi),
+                    'pm25': r.get('PM2_5'),
+                    'pm10': r.get('PM10'),
+                    'so2': r.get('SO2'),
+                    'no2': r.get('NO2'),
+                    'o3': r.get('O3'),
+                    'co': r.get('CO'),
+                    'ts': r.get('TimePointStr') or '',
+                })
+                break
+    if not items:
+        return {'ok': False, 'items': [], 'error': 'CNEMC 无匹配城市数据'}
+    return {'ok': True, 'items': items, 'source': '中国环境监测总站 CNEMC', 'ts': time.strftime('%m-%d %H:%M')}
+
+
+def _fetch_rail_tickets():
+    """铁路余票：12306 leftTicket 接口（需先访问 /otn/leftTicket/init 拿 cookie）。
+
+    对 _RAIL_ROUTES 每组区间依次查询（限频 ≥3s），result 为 urlencoded 按 | 分割，
+    解析车次/出发到达站/发时到时/历时/商务/一等/二等/无座余票。60s 缓存。
+    """
+    import urllib.request as _ur
+    import urllib.parse as _up
+    import http.cookiejar as _cj
+
+    global _RAIL_LAST_REQ
+
+    def _throttle():
+        global _RAIL_LAST_REQ
+        wait = _RAIL_MIN_INTERVAL - (time.time() - _RAIL_LAST_REQ)
+        if wait > 0:
+            time.sleep(wait)
+        _RAIL_LAST_REQ = time.time()
+
+    def _station(code):
+        return _RAIL_STATIONS.get(code, code)
+
+    def _seat(v):
+        if not v or v in ('无', '--', '*'):
+            return '无'
+        if v == '有':
+            return '有'
+        return v
+
+    cj = _cj.CookieJar()
+    opener = _ur.build_opener(_ur.HTTPCookieProcessor(cj))
+    hdr = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Safari/537.36',
+        'Accept': '*/*', 'Accept-Language': 'zh-CN,zh;q=0.9',
+    }
+    # 拿 cookie
+    try:
+        req = _ur.Request('https://kyfw.12306.cn/otn/leftTicket/init', headers=hdr)
+        opener.open(req, timeout=10).read()
+    except Exception:
+        return {'ok': False, 'items': [], 'error': '12306 cookie 获取失败'}
+
+    items = []
+    # 查询明日余票（12306 当天车次基本售罄/已发车，明日数据更有展示意义；预售 15 天）
+    today = (datetime.now() + timedelta(days=1)).strftime('%Y-%m-%d')
+    for frm, to in _RAIL_ROUTES:
+        _throttle()
+        try:
+            q = _up.urlencode({
+                'leftTicketDTO.train_date': today,
+                'leftTicketDTO.from_station': frm,
+                'leftTicketDTO.to_station': to,
+                'purpose_codes': 'ADULT',
+            })
+            url = 'https://kyfw.12306.cn/otn/leftTicket/queryG?' + q
+            req2 = _ur.Request(url, headers=dict(hdr, Referer='https://kyfw.12306.cn/otn/leftTicket/init'))
+            with opener.open(req2, timeout=12) as resp:
+                d = json.loads(resp.read().decode('utf-8', 'ignore'))
+        except Exception:
+            continue
+        rows = (d.get('data') or {}).get('result') or []
+        route = '%s→%s' % (_station(frm), _station(to))
+        for row in rows[:6]:
+            parts = _up.unquote(row).split('|')
+            if len(parts) < 34:
+                continue
+            items.append({
+                'route': route,
+                'train_no': parts[3],
+                'from': _station(parts[6] or frm),
+                'to': _station(parts[7] or to),
+                'depart': parts[8],
+                'arrive': parts[9],
+                'duration': parts[10],
+                'date': parts[13] or today.replace('-', ''),
+                'sw': _seat(parts[30] if len(parts) > 30 else ''),
+                'yd': _seat(parts[31] if len(parts) > 31 else ''),
+                'ed': _seat(parts[32] if len(parts) > 32 else ''),
+                'wz': _seat(parts[20] if len(parts) > 20 else ''),
+            })
+    if not items:
+        return {'ok': False, 'items': [], 'error': '12306 余票查询失败或暂无车次'}
+    return {'ok': True, 'items': items, 'source': '12306.cn', 'ts': time.strftime('%H:%M:%S')}
+
+
+def _fetch_ocean():
+    """海洋：Open-Meteo Marine API（无 token，与天气 open-meteo 同架构）。
+
+    为 _OCEAN_CITIES 沿海城市逐城请求 wave_height/wave_period/wave_direction/
+    sea_surface_temperature，输出与 ocean.json 前端 schema 兼容
+    （city/wave_height(m)/wave_period(s)/wave_direction(°)/sea_temp(°C)/ts）。30 分钟缓存。
+    """
+    import urllib.request as _ur
+    from concurrent.futures import ThreadPoolExecutor as _TPE
+
+    def _one(c):
+        name, lat, lon = c
+        url = (
+            'https://marine-api.open-meteo.com/v1/marine?latitude=%.2f&longitude=%.2f'
+            '&current=wave_height,wave_period,wave_direction,sea_surface_temperature'
+            '&timezone=Asia/Shanghai' % (lat, lon)
+        )
+        try:
+            req = _ur.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+            with _ur.urlopen(req, timeout=10) as resp:
+                d = json.loads(resp.read().decode('utf-8', 'ignore'))
+            cur = d.get('current') or {}
+            return {
+                'city': name,
+                'wave_height': cur.get('wave_height'),
+                'wave_period': cur.get('wave_period'),
+                'wave_direction': cur.get('wave_direction'),
+                'sea_temp': cur.get('sea_surface_temperature'),
+                'ts': (cur.get('time') or '').replace('T', ' '),
+            }
+        except Exception:
+            return None
+
+    items = []
+    with _TPE(max_workers=min(5, max(1, len(_OCEAN_CITIES)))) as pool:
+        for r in pool.map(_one, _OCEAN_CITIES):
+            if r:
+                items.append(r)
+    if not items:
+        return {'ok': False, 'items': [], 'error': 'Open-Meteo 海洋接口请求失败'}
+    return {'ok': True, 'items': items, 'source': 'Open-Meteo Marine', 'ts': time.strftime('%m-%d %H:%M')}
+
+
 @app.route('/api/topbar/stock', methods=['GET'])
 def api_topbar_stock():
     """顶栏行情（主：fx678 汇通网股指/期市/汇市/黄金/原油 45 项；备用：新浪，30s 缓存）"""
@@ -11471,6 +11718,54 @@ def api_topbar_flash():
         if stale:
             return jsonify(dict(stale, stale=True))
         return jsonify({'ok': False, 'error': '快讯服务暂不可用'})
+
+
+@app.route('/api/topbar/air', methods=['GET'])
+def api_topbar_air():
+    """顶栏空气质量（代理中国环境监测总站 CNEMC 官方接口，15 分钟缓存）"""
+    try:
+        data = _topbar_get_cache('air')
+        if data is None:
+            data = _fetch_air_all()
+            _topbar_set_cache('air', data)
+        return jsonify(data)
+    except Exception as e:
+        stale = _TOPBAR_CACHE.get('air', {}).get('data')
+        if stale:
+            return jsonify(dict(stale, stale=True))
+        return jsonify({'ok': False, 'error': '空气质量服务暂不可用'})
+
+
+@app.route('/api/topbar/rail', methods=['GET'])
+def api_topbar_rail():
+    """顶栏铁路余票（代理 12306 leftTicket，60s 缓存，内部限频 ≥3s）"""
+    try:
+        data = _topbar_get_cache('rail')
+        if data is None:
+            data = _fetch_rail_tickets()
+            _topbar_set_cache('rail', data)
+        return jsonify(data)
+    except Exception as e:
+        stale = _TOPBAR_CACHE.get('rail', {}).get('data')
+        if stale:
+            return jsonify(dict(stale, stale=True))
+        return jsonify({'ok': False, 'error': '铁路余票服务暂不可用'})
+
+
+@app.route('/api/topbar/ocean', methods=['GET'])
+def api_topbar_ocean():
+    """顶栏海洋信息（代理 Open-Meteo Marine API，30 分钟缓存）"""
+    try:
+        data = _topbar_get_cache('ocean')
+        if data is None:
+            data = _fetch_ocean()
+            _topbar_set_cache('ocean', data)
+        return jsonify(data)
+    except Exception as e:
+        stale = _TOPBAR_CACHE.get('ocean', {}).get('data')
+        if stale:
+            return jsonify(dict(stale, stale=True))
+        return jsonify({'ok': False, 'error': '海洋服务暂不可用'})
 
 
 @app.route('/api/admin/news/<news_id>/featured', methods=['PUT'])
@@ -15288,6 +15583,449 @@ except Exception as _sched_err:
     print('[SCHEDULER] 一期抓取调度模块加载失败:', _sched_err)
 
 
+# ========================================================================
+# 【东广视新闻站 · 要闻速览（快报生成）模块 — 移植自翱翔鸟新闻 PeaceNews】
+# 对应接口：GET /api/news/digest（当前/指定时段）、GET|POST /api/news/digest/write（定时写入缓存）
+# 能力：按时段规则聚合多源新闻 → 标题 bigram 聚类去重 → 来源中文映射 → 外文条目 AI 要素式中文重写 → 缓存文件
+# ========================================================================
+
+_KEYWORD_NOISE_PATTERNS = [
+    re.compile(r'原文链接\s*[:：]\s*https?://\S+', re.I),
+    re.compile(r'原文链接\s*[:：]?\s*', re.I),
+    re.compile(r'本文来自\s*\S{0,12}', re.I),
+    re.compile(r'文来自\s*\S{0,12}', re.I),
+    re.compile(r'本文来源\s*[:：]?\s*\S{0,12}', re.I),
+    re.compile(r'作者\s*[:：]\s*\S{0,20}', re.I),
+    re.compile(r'原标题\s*[:：]\s*\S{0,40}', re.I),
+    re.compile(r'来源\s*[:：]\s*\S{0,20}', re.I),
+    re.compile(r'责任编辑\s*[:：]?\s*\S{0,12}', re.I),
+    re.compile(r'微信公众号\s*[:：]?\s*\S{0,20}', re.I),
+    re.compile(r'公众号\s*[:：]?\s*\S{0,12}', re.I),
+    re.compile(r'扫码关注\s*\S{0,12}', re.I),
+    re.compile(r'扫码\s*\S{0,12}', re.I),
+    re.compile(r'邮箱\s*[:：]\s*\S+', re.I),
+    re.compile(r'版权声明[：:]?.*', re.I),
+    re.compile(r'侵权请联系删除[，。;；]?', re.I),
+    re.compile(r'转载\s*[:：]?\s*\S{0,12}', re.I),
+    re.compile(r'点击查看原文', re.I),
+    re.compile(r'查看原文', re.I),
+    re.compile(r'声明[：:]\s*\S{0,12}', re.I),
+]
+
+
+def _clean_keyword_text(text):
+    """抽取热词前清洗正文/摘要中的模板噪声片段，返回仅保留新闻要素的文本。"""
+    s = str(text or '')
+    for pat in _KEYWORD_NOISE_PATTERNS:
+        s = pat.sub(' ', s)
+    return s
+
+_DIGEST_CACHE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'digest_cache')
+
+
+def _digest_cache_path(hour):
+    """速览缓存文件路径：按日期/时段命名（digest_YYYYMMDD_HH.json），支持多时段共存。"""
+    try:
+        day = time.strftime('%Y%m%d', time.localtime())
+    except Exception:
+        day = 'unknown'
+    return os.path.join(_DIGEST_CACHE_DIR, 'digest_%s_%02d.json' % (day, int(hour or 0)))
+
+
+def _digest_read_cache(hour):
+    """读取当天指定时段的速览缓存；不存在或解析失败返回 None。"""
+    try:
+        p = _digest_cache_path(hour)
+        if not os.path.exists(p):
+            return None
+        with open(p, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    except Exception:
+        return None
+
+
+def _digest_write_cache(hour, label, items):
+    """把速览写入当天缓存文件（幂等覆盖）；供定时任务调用。返回缓存文件绝对路径。"""
+    try:
+        os.makedirs(_DIGEST_CACHE_DIR, exist_ok=True)
+        p = _digest_cache_path(hour)
+        payload = {
+            'hour': int(hour or 0),
+            'label': label or '',
+            'digest': items or [],
+            'generated_at': time.time(),
+        }
+        with open(p, 'w', encoding='utf-8') as f:
+            json.dump(payload, f, ensure_ascii=False)
+        return p
+    except Exception:
+        return ''
+
+
+_DIGEST_HOUR_RULES = {
+    6:  {'label': '早安·民生文体速览', 'cats': ['社会', '生活', '经济', '体育', '科技', '人文', '娱乐']},
+    17: {'label': '晚间·民生文体速览', 'cats': ['社会', '生活', '经济', '体育', '科技', '人文', '娱乐']},
+    8:  {'label': '早间·时事速览', 'cats': ['时事', '国际']},
+    12: {'label': '午间·时事速览', 'cats': ['时事', '国际']},
+    18: {'label': '晚间·时事速览', 'cats': ['时事', '国际']},
+    22: {'label': '夜间·时事速览', 'cats': ['时事', '国际']},
+    13: {'label': '全球文体科技消费速览', 'cats': ['人文', '体育', '科技', '娱乐', '生活']},
+    10: {'label': '财经速览', 'cats': ['经济']},
+    15: {'label': '财经速览', 'cats': ['经济']},
+    21: {'label': '财经速览', 'cats': ['经济']},
+    19: {'label': '深度·社会观察速览', 'cats': ['社会']},
+    20: {'label': '时政·产经国际速览', 'cats': ['时事', '国际', '经济']},
+}
+# 19 点"国内媒体深度"排除的明显外媒源
+_DIGEST_FOREIGN_SRC_HINT = ('reuters', 'apnews', 'bbc', 'cnn', 'nytimes', 'wsj', 'ft.com', 'theguardian', 'aljazeera')
+
+# 常见媒体源 → 中文译名（用于速览来源中文展示，避免英文源名破坏中文界面）
+_SRC_ZH_MAP = {
+    'reuters': '路透', 'apnews': '美联社', 'ap': '美联社', 'bbc': 'BBC', 'cnn': 'CNN',
+    'nytimes': '纽约时报', 'wsj': '华尔街日报', 'ft.com': '金融时报', 'ft': '金融时报',
+    'theguardian': '卫报', 'aljazeera': '半岛电视台', 'bloomberg': '彭博', 'cnbc': 'CNBC',
+    'kyodonews': '共同社', 'kyodo': '共同社', 'jiji': '时事社', 'nhk': 'NHK',
+    'nikkei': '日经新闻', 'mainichi': '每日新闻', 'asahi': '朝日新闻',
+    'upi': '合众国际社', 'usatoday': '今日美国', 'abcnews': 'ABC', 'nbcnews': 'NBC',
+    'cbsnews': 'CBS', 'dw': '德国之声', 'rfi': '法广', 'afp': '法新社',
+    'tass': '塔斯社', 'rt': '今日俄罗斯', 'scmp': '南华早报', 'straitstimes': '联合早报',
+    'economist': '经济学人', 'time': '时代周刊', 'forbes': '福布斯', 'politico': '政客',
+    'barrons': '巴伦周刊', 'businessinsider': '商业内幕', 'huffpost': '赫芬顿邮报',
+    'dailymail': '每日邮报', 'thetimes': '泰晤士报', 'telegraph': '每日电讯报',
+    'independent': '独立报', 'spiegel': '明镜周刊', 'lemonde': '世界报', 'elpais': '国家报',
+    'xinhua': '新华社', 'people': '人民网', 'cctv': '央视', '36kr': '36氪',
+    'wallstreetcn': '华尔街见闻', 'eastmoney': '东方财富', 'sina': '新浪财经',
+    'ifeng': '凤凰网', 'thepaper': '澎湃新闻', 'jiemian': '界面新闻',
+    'yicai': '第一财经', 'cls': '财联社', 'caixin': '财新',
+    'france24': '法国24频道', 'france24（英）': '法国24频道', 'francetvinfo': '法国电视一台',
+    'lefigaro': '费加罗报', 'lesechos': '回声报', 'liberation': '解放报', 'leparisien': '巴黎人报',
+    'mediapart': 'Mediapart', '20minutes': '二十分钟报', 'skynews': '天空新闻',
+    'channelnewsasia': '亚洲新闻台', 'cna': '亚洲新闻台', 'todayonline': '今日在线',
+    'malaymail': '马来邮报', 'thestar': '星报', 'bernama': '马新社', 'antarnews': '安塔拉通讯社',
+    'chinadaily': '中国日报', 'globaltimes': '环球时报', 'xinhuanet': '新华网', 'huanqiu': '环球网',
+    'cri': '国际在线', 'gmw': '光明网', 'peoplecn': '人民网', 'chinanews': '中国新闻网',
+    'cctvnews': '央视新闻', 'europe1': '欧洲一台', 'bfmtv': 'BFM电视', 'lexpress': '快报',
+    'lepoint': '观点报', 'courrierinternational': '国际信使报', 'irishtimes': '爱尔兰时报',
+    'scotsman': '苏格兰人报', 'heraldscotland': '苏格兰先驱报', 'eveningstandard': '标准晚报',
+    'mirror': '每日镜报', 'express': '每日快报', 'sun': '太阳报', 'metro': '地铁报',
+}
+
+
+def _digest_date_prefix(ts):
+    """Unix 时间戳 → '10月20日 ' 日期前缀（速览标题要素之一）。"""
+    try:
+        t = time.localtime(ts)
+        return '%d月%d日 ' % (t.tm_mon, t.tm_mday)
+    except Exception:
+        return ''
+
+
+def _digest_src_clean(s):
+    """来源名净化：去掉“即时新闻/子分类/新闻速递/综合”等多余文字，仅留网站/媒体名。"""
+    if not s:
+        return ''
+    t = (s or '').strip()
+    t = re.sub(r'[（(].*?[)）]', '', t)                       # 去括号内子分类
+    t = re.sub(r'(即时新闻|子分类|新闻速递|新闻快讯|综合报道|新闻要闻|要闻速览|速览|快讯|滚动|最新|推送|官方|RSS|HTML|JSON)$', '', t)
+    t = re.sub(r'(推送\s*RSS|官方\s*RSS|RSS\s*推送|官方\s*推送)$', '', t)
+    t = re.sub(r'[-_—\s:：·]+$', '', t)
+    t = t.strip('·:： ')
+    if len(t) > 12:
+        t = t[:12]
+    # 净化后仍为纯拉丁超长串或含大段英文者，退化为“新闻源”避免破坏中文界面
+    if not t or (len(re.findall(r'[A-Za-z]', t)) >= 4 and not re.search(r'[\u4e00-\u9fff]', t)):
+        return '新闻源'
+    return t
+
+
+def _digest_src_zh(src_set):
+    """来源集合 → 中文媒体名合并展示（如 '路透/共同社'）。"""
+    if not src_set:
+        return ''
+    names = []
+    for s in src_set:
+        key = (s or '').strip().lower().replace(' ', '')
+        mapped = _SRC_ZH_MAP.get(key) if key else None
+        names.append(mapped if mapped else _digest_src_clean(s))
+    names = [n for n in names if n]
+    if not names:
+        return ''
+    if len(names) == 1:
+        return names[0]
+    return '/'.join(names[:3])
+
+
+def _digest_zh_rewrite_batch(jobs, batch_size=5):
+    """对含英文的速览标题/摘要做批量中文要素式重写（分批，防止单次输出过长被截断）。
+
+    jobs: [{'key': str, 'title': str, 'summary': str}]
+    返回 {key: {'title': str, 'summary': str}}；AI 不可用或返回不合法时返回 {}（调用方走规则兜底）。
+    """
+    if not jobs:
+        return {}
+    sys_p = ('你是资深中文新闻编辑。把英文/法文新闻标题与摘要改写成简洁的简体中文：\n'
+             '1) 标题：一行、35 字以内，必须包含新闻主体与事件核心，不要写日期（日期由系统前缀）；\n'
+             '2) 摘要：一行、70 字以内，概括新闻要点；\n'
+             '3) 只输出一个 JSON 对象，键为输入序号（如 "0"、"1"），值为 {"title": "...", "summary": "..."}，'
+             '禁止输出 JSON 以外的任何文本或解释。')
+    out = {}
+    for i in range(0, len(jobs), batch_size):
+        chunk = jobs[i:i + batch_size]
+        lines = []
+        for j in chunk:
+            lines.append('[%s] 标题: %s\n摘要: %s' % (
+                j['key'], (j.get('title') or '')[:220], (j.get('summary') or '')[:320]))
+        try:
+            raw = call_lm_studio([{'role': 'system', 'content': sys_p},
+                                  {'role': 'user', 'content': '\n\n'.join(lines)}],
+                                 timeout=45, max_tokens=4096)
+            m = re.search(r'\{[\s\S]*\}', raw or '')
+            if not m:
+                continue
+            data = json.loads(m.group(0))
+            for k, v in data.items():
+                if isinstance(v, dict):
+                    out[str(k)] = {'title': (v.get('title') or '').strip(),
+                                   'summary': (v.get('summary') or '').strip()}
+        except Exception:
+            continue
+    return out
+
+
+def _title_bigrams(t):
+    """标题字符 bigram 集合（中英文均适用），用于事件去重相似度。"""
+    norm = re.sub(r"[\s\u3000，。；：、！？“”‘’（）【】《》·—…,.!?;:()\[\]{}'\"\-]", '', t or '').lower()
+    if len(norm) < 2:
+        return set()
+    return set(norm[i:i + 2] for i in range(len(norm) - 1))
+
+
+def _title_score(t, src=''):
+    """标题信息量评分：长度适中 + 含实体/数字 + 知名源加权，用于选代表性信源标题。"""
+    s = 0.0
+    L = len(re.sub(r"[\s\u3000]", '', t or ''))
+    if 8 <= L <= 45:
+        s += 2.0
+    elif L < 8:
+        s += 0.5
+    else:
+        s += 1.2
+    if re.search(r'[\d%％亿元万亿美元欧元]', t):
+        s += 1.5
+    if re.search(r'[，、：]', t):
+        s += 0.6
+    src_l = (src or '').lower()
+    for k in ('36氪', '华尔街见闻', '澎湃', '界面', '第一财经', '新华社', '中新', '人民日报', '央视', '财联社', 'reuters', 'bloomberg', 'cnbc', 'ft.com'):
+        if k in src_l:
+            s += 1.0
+            break
+    return s
+
+
+def _news_digest(db, limit=8, days=7, hour=None):
+    """按时段规则生成要闻速览（5-8 条）。
+
+    多信源同一事件合并去重（标题 bigram Jaccard 相似度 >= 0.5 归为一组），
+    每组取代表性信源标题作为重写后标题，摘要取组内最完整，来源合并展示。
+    hour 为空时使用当前小时；无命中时段返回空列表。
+    """
+    hour = int(time.strftime('%H', time.localtime())) if hour is None else int(hour)
+    rule = _DIGEST_HOUR_RULES.get(hour)
+    if not rule:
+        return hour, '', []
+    cats = rule['cats']
+    ph = ','.join('?' for _ in cats)
+    since = time.time() - days * 86400
+    order = 'LENGTH(content) DESC' if hour == 19 else 'likes DESC, created_at DESC'
+    rows = _fetchall(db, '''
+        SELECT id, title, content, summary, category, author_id, created_at
+        FROM news
+        WHERE created_at >= ? AND category IN (%s)
+          AND (report_removed = 0 OR report_removed IS NULL)
+        ORDER BY %s LIMIT ?
+    ''' % (ph, order), tuple([since] + cats + [60]))
+    records = []
+    for r in rows:
+        t = (r.get('title') or '').strip()
+        if not t or _is_shell_column_title(t):
+            continue
+        body = (r.get('content') or '').strip()
+        if len(body) < 40:
+            continue
+        aid = r.get('author_id') or ''
+        src = ''
+        if aid.startswith('source:'):
+            src = aid[len('source:'):].strip() or '新闻源'
+        elif aid:
+            src = aid
+        if hour == 19 and src:
+            src_l = src.lower()
+            if any(k in src_l for k in _DIGEST_FOREIGN_SRC_HINT):
+                continue
+        summary = (r.get('summary') or '').strip()
+        if summary:
+            # 摘要噪声清洗：去掉"点击查看原文> 原文链接：URL"等模板片段，避免垃圾摘要入库
+            summary = _clean_keyword_text(summary)
+            summary = re.sub(r'https?://\S+', ' ', summary)
+            summary = re.sub(r'[<>&>＞]+', ' ', summary)
+            summary = re.sub(r'\s+', ' ', summary).strip()
+        if not summary:
+            plain = re.sub(r'<[^>]*>', ' ', body)
+            plain = re.sub(r'\s+', ' ', plain).strip()
+            plain = _clean_keyword_text(plain)
+            plain = re.sub(r'https?://\S+', ' ', plain)
+            plain = re.sub(r'[<>&>＞]+', ' ', plain)
+            plain = re.sub(r'\s+', ' ', plain).strip()
+            summary = plain[:110]
+        records.append({
+            'id': r['id'],
+            'title': _news_refine_title(t, body),
+            'summary': summary[:140],
+            'category': r.get('category') or '',
+            'src': src,
+            'created_at': r.get('created_at') or 0,
+            'score': _title_score(t, src),
+        })
+    if not records:
+        return hour, rule['label'], []
+    # 贪心聚类：以评分最高者为簇心，bigram Jaccard >= 0.5 视为同一事件
+    groups = []
+    for rec in records:
+        bg = _title_bigrams(rec['title'])
+        placed = False
+        for g in groups:
+            gbg = g['bg']
+            if not gbg or not bg:
+                continue
+            inter = len(bg & gbg)
+            union = len(bg | gbg)
+            if union and inter / union >= 0.5:
+                g['recs'].append(rec)
+                g['bg'] = gbg | bg
+                placed = True
+                break
+        if not placed:
+            groups.append({'bg': bg, 'recs': [rec]})
+    items = []
+    zh_jobs = []
+    for g in groups:
+        recs = g['recs']
+        # 组内中文标题优先（更可信、无需翻译），否则取评分最高代表
+        zh_recs = [x for x in recs if re.search(r'[\u4e00-\u9fff]', x['title'])]
+        rep = max((zh_recs or recs), key=lambda x: (x['score'], x['created_at']))
+        src_set = []
+        for x in recs:
+            s = x['src']
+            if s and s not in src_set:
+                src_set.append(s)
+        src_txt = _digest_src_zh(src_set)
+        best_sum = max([x['summary'] for x in recs] or [''])
+        title = rep['title']
+        summary = best_sum[:140]
+        need_zh = bool(re.search(r'[A-Za-z]', title + ' ' + summary)) and not re.search(r'[\u4e00-\u9fff]', title)
+        key = str(len(items))
+        if need_zh:
+            zh_jobs.append({'key': key, 'title': title, 'summary': summary})
+        items.append({
+            'key': key,
+            'id': rep['id'],
+            'title': title,
+            'summary': summary,
+            'category': rep.get('category') or '',
+            'source': src_txt,
+            'created_at': rep['created_at'],
+            'need_zh': need_zh,
+        })
+    items.sort(key=lambda x: -x['created_at'])
+    items = items[:limit]
+    # 批量 AI 中文要素式重写（仅最终展示的含英文条目触发；失败走规则兜底，不阻塞接口）
+    zh_jobs = [j for j in zh_jobs if j['key'] in [it['key'] for it in items]]
+    zh_map = _digest_zh_rewrite_batch(zh_jobs)
+    for it in items:
+        if it['need_zh']:
+            z = zh_map.get(it['key'])
+            if z and z.get('title'):
+                # 防御：AI 标题若仍含过多英文片段（≥3 段拉丁词），判定重写无效走兜底
+                en_seg = re.findall(r'[A-Za-z]{2,}', z['title'])
+                if len(en_seg) <= 2:
+                    it['title'] = z['title']
+                else:
+                    z = None
+            if not (z and z.get('title')):
+                src_zh = it['source'] or '外媒'
+                # 兜底标题必须全中文：来源名若仍含拉丁字母（未收录源），退化为"外媒"
+                if not re.fullmatch(r'[\u4e00-\u9fff（）·、/]+', src_zh or ''):
+                    src_zh = '外媒'
+                it['title'] = '%s发布%s要闻' % (src_zh, it['category'] or '新闻')
+            if z and z.get('summary'):
+                it['summary'] = z['summary']
+            elif re.search(r'[A-Za-z]', it['summary']):
+                it['summary'] = ''
+        # 统一日期前缀（要素：时间）
+        it['title'] = _digest_date_prefix(it['created_at']) + it['title']
+        it.pop('key', None)
+        it.pop('need_zh', None)
+    return hour, rule['label'], items
+
+
+@app.route('/api/news/digest', methods=['GET'])
+def api_news_digest():
+    """公开：要闻速览（默认当前小时，支持 ?hour=N 指定时段）。
+
+    优先返回当天该时段的缓存文件（定时写入接口产出），无缓存则实时生成兜底。
+    """
+    db = get_db()
+    try:
+        hour_arg = request.args.get('hour')
+        hour = int(hour_arg) if str(hour_arg or '').strip().isdigit() else int(time.strftime('%H', time.localtime()))
+    except Exception:
+        hour = int(time.strftime('%H', time.localtime()))
+    cached = _digest_read_cache(hour)
+    if cached and isinstance(cached.get('digest'), list):
+        return jsonify({
+            'hour': cached.get('hour', hour),
+            'label': cached.get('label', ''),
+            'digest': cached['digest'],
+            'cached': True,
+            'generated_at': cached.get('generated_at'),
+            'rules': sorted(_DIGEST_HOUR_RULES.keys()),
+        })
+    try:
+        hour_r, label, items = _news_digest(db, hour=hour)
+    except Exception:
+        hour_r, label, items = hour, '', []
+    return jsonify({'hour': hour_r, 'label': label, 'digest': items, 'cached': False,
+                    'rules': sorted(_DIGEST_HOUR_RULES.keys())})
+
+
+@app.route('/api/news/digest/write', methods=['GET', 'POST'])
+def api_news_digest_write():
+    """定时写入接口：生成指定（?hour=N）/当前时段速览并写入当日缓存文件。
+
+    供定时项目在电脑开机后调用，按日期/时段命名缓存（digest_YYYYMMDD_HH.json），
+    多时段可共存；网页端加载速览时优先读缓存、无缓存实时生成兜底。
+    """
+    db = get_db()
+    try:
+        hour_arg = request.args.get('hour') or (request.get_json(silent=True) or {}).get('hour')
+        hour = int(hour_arg) if str(hour_arg or '').strip().isdigit() else int(time.strftime('%H', time.localtime()))
+    except Exception:
+        hour = int(time.strftime('%H', time.localtime()))
+    try:
+        hour_r, label, items = _news_digest(db, hour=hour)
+        path = _digest_write_cache(hour_r, label, items)
+    except Exception:
+        hour_r, label, items, path = hour, '', [], ''
+    return jsonify({
+        'ok': bool(path),
+        'hour': hour_r,
+        'label': label,
+        'count': len(items),
+        'cache_path': path,
+        'cache_file': os.path.basename(path) if path else '',
+    })
+
+
 if __name__ == '__main__':
     init_db()
     # 启动后台清理线程：每小时清理一次未验证邮箱账号
@@ -15302,17 +16040,25 @@ if __name__ == '__main__':
     _cleanup_thread.start()
     # 启动时先清理一次
     _cleanup_unverified_users()
-    # 顶栏三接口启动预热：后台预取行情/天气/快讯缓存，避免首次访问冷缓存时前端 6s 超时
+    # 顶栏接口启动预热：后台预取行情/天气/快讯/空气/铁路/海洋缓存，避免首次访问冷缓存时前端 6s 超时
     def _topbar_prewarm():
         try:
-            for _k, _fn in (('stock', _fetch_fx678_quotes), ('weather', _fetch_weather_all), ('flash', _fetch_flash_news)):
+            _fns = [
+                ('stock', _fetch_fx678_quotes),
+                ('weather', _fetch_weather_all),
+                ('flash', _fetch_flash_news),
+                ('air', _fetch_air_all),
+                ('rail', _fetch_rail_tickets),
+                ('ocean', _fetch_ocean),
+            ]
+            for _k, _fn in _fns:
                 try:
                     _d = _fn()
                     if _d and _d.get('items'):
                         _topbar_set_cache(_k, _d)
                 except Exception as _e:
                     print(f'[TOPBAR] 预热 {_k} 失败: {_e}')
-            print('[TOPBAR] 顶栏三接口预热完成')
+            print('[TOPBAR] 顶栏接口预热完成')
         except Exception as _e:
             print('[TOPBAR] 预热异常:', _e)
     _prewarm_thread = threading.Thread(target=_topbar_prewarm, daemon=True)
@@ -15322,6 +16068,16 @@ if __name__ == '__main__':
     _ai_thread.start()
     print('OVC 论坛服务器启动中...')
     print('数据库:', DB_PATH if not _USE_PG else 'PostgreSQL (' + os.environ.get('DATABASE_URL', '').split('@')[-1] + ')')
+    # ---- eastwind 模块挂载（东广视） ----
+    import os as _os, sys as _sys
+    _os.environ.setdefault("EASTWIND_REPO_ROOT", r"C:\Users\feq11\Downloads\netlify\ref-repos\eastwind-orchestrator")
+    _sys.path.insert(0, r"C:\Users\feq11\Downloads\netlify\ref-repos\eastwind-orchestrator")
+    try:
+        from eastwind_mount import register as _register_eastwind
+        _register_eastwind(app)
+        print('[EASTWIND] eastwind modules mounted (/api/eastwind/*)')
+    except Exception as _e:
+        print('[EASTWIND] mount failed:', _e)
     _port = int(os.environ.get('PORT', 8080))
     print('访问 http://localhost:%d/' % _port)
     if _HAS_SOCKETIO and socketio:
