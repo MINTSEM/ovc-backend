@@ -1,0 +1,72 @@
+{
+ "hour": 21,
+ "label": "财经速览",
+ "digest": [
+  {
+   "id": "news_e07368bb",
+   "title": "Anthropic IPO定价撤回，最快今日路演下周冲刺上市",
+   "summary": "Anthropic因近700亿美元IPO定价突然撤回，计划最快今日启动路演，下周将全力冲刺上市进程。",
+   "category": "财经",
+   "source": "InfoQ 中文",
+   "created_at": 1794336858.0
+  },
+  {
+   "id": "news_6c75fd82",
+   "title": "基金会管理条例正式发布实施",
+   "summary": "中国政府网发布《基金会管理条例》，明确基金会运作规范及监管要求，推动公益事业健康发展。",
+   "category": "财经",
+   "source": "中国政府网 推送 RSS",
+   "created_at": 1794330000.0
+  },
+  {
+   "id": "news_57bdc800",
+   "title": "Anthropic启动IPO路演，发行价上限78美元最高估值1.4万亿美元",
+   "summary": "Anthropic启动IPO路演，设定发行价上限78美元，预计最高估值达1.4万亿美元。",
+   "category": "财经",
+   "source": "澎湃 时事（HTML）",
+   "created_at": 1794327454.8639739
+  },
+  {
+   "id": "news_c6b6a5de",
+   "title": "美联储理事沃勒：倾向12月加息25基点或50基点",
+   "summary": "美联储理事沃勒表示，若通胀持续高企，12月可能加息25个基点，极端情况下或需加息50个基点。",
+   "category": "财经",
+   "source": "澎湃 时事（HTML）",
+   "created_at": 1794327454.8638897
+  },
+  {
+   "id": "news_79c0d79c",
+   "title": "贵州茅台i茅台将转向日常售卖模式",
+   "summary": "贵州茅台宣布i茅台平台将从抢购模式逐步调整为满足消费者日常需求的常态化销售模式。",
+   "category": "财经",
+   "source": "澎湃 时事（HTML）",
+   "created_at": 1794327454.8638654
+  },
+  {
+   "id": "news_8f940822",
+   "title": "AI产业高景气度与能源价格上涨推动10月进出口高增",
+   "summary": "10月进出口延续高增长，AI产业保持高景气度，同时能源价格上升成为重要影响因素。",
+   "category": "财经",
+   "source": "澎湃 时事（HTML）",
+   "created_at": 1794327454.8638177
+  },
+  {
+   "id": "news_0bb81cb1",
+   "title": "第九届进博会非洲商品零关税入驻",
+   "summary": "第九届进博会吸引非洲多国商品以零关税形式参展，助力非洲优质产品进入中国市场。",
+   "category": "财经",
+   "source": "人民网 国际（HTML）",
+   "created_at": 1794327454.347793
+  },
+  {
+   "id": "news_44830eb1",
+   "title": "谷歌等七家企业承诺向Anthropic投资260亿美元",
+   "summary": "谷歌、英伟达等七家公司承诺通过同步私募方式向Anthropic投资260亿美元，认购价格与IPO发行价一致。",
+   "category": "财经",
+   "source": "36氪（快讯）",
+   "created_at": 1794327171.2601879
+  }
+ ],
+ "generated_at": 1794328066.112987,
+ "generator": "qwen3:4b@local"
+}

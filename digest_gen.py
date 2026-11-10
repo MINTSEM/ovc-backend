@@ -161,7 +161,7 @@ SYS_PROMPT = (
 def build_materials(records, hour, max_n=12):
     """按时段规则筛素材，返回聚类后的代表条目（供 AI 精炼）。"""
     rule = HOUR_RULES[hour]
-    cats = set(rule['cats'])
+    cats = rule_cats(hour)
     recs = []
     for r in records:
         if not usable(r):
@@ -225,6 +225,20 @@ def gen_hour(records, hour, limit=8, dry=False):
         json.dump(payload, f, ensure_ascii=False, indent=1)
     print('       写入', os.path.basename(p))
     return payload
+
+
+# 线上新闻实际分类：时事/财经/娱乐/科技/环境/体育/人文；旧分类名需映射
+CAT_ALIAS = {'经济': '财经', '社会': '时事', '生活': '人文', '国际': '时事', '国际新闻': '时事'}
+
+
+def rule_cats(hour):
+    """时段规则分类 → 线上真实分类集合（已做别名映射与去重）。"""
+    out = []
+    for c in HOUR_RULES[hour]['cats']:
+        cc = CAT_ALIAS.get(c, c)
+        if cc not in out:
+            out.append(cc)
+    return set(out or ['时事'])
 
 
 def main():

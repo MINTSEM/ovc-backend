@@ -15732,6 +15732,16 @@ _DIGEST_HOUR_RULES = {
     19: {'label': '深度·社会观察速览', 'cats': ['社会']},
     20: {'label': '时政·产经国际速览', 'cats': ['时事', '国际', '经济']},
 }
+# 线上新闻实际分类：时事/财经/娱乐/科技/环境/体育/人文
+# 时段规则里沿用的旧分类名（经济/社会/生活/国际）需映射到真实分类，否则查不到新闻
+_DIGEST_CAT_ALIAS = {
+    '经济': '财经',
+    '社会': '时事',
+    '生活': '人文',
+    '国际': '时事',
+    '国际新闻': '时事',
+}
+
 # 19 点"国内媒体深度"排除的明显外媒源
 _DIGEST_FOREIGN_SRC_HINT = ('reuters', 'apnews', 'bbc', 'cnn', 'nytimes', 'wsj', 'ft.com', 'theguardian', 'aljazeera')
 
@@ -15889,7 +15899,13 @@ def _news_digest(db, limit=8, days=7, hour=None):
     rule = _DIGEST_HOUR_RULES.get(hour)
     if not rule:
         return hour, '', []
-    cats = rule['cats']
+    cats = []
+    for _c in rule['cats']:
+        _cc = _DIGEST_CAT_ALIAS.get(_c, _c)
+        if _cc not in cats:
+            cats.append(_cc)
+    if not cats:
+        cats = ['时事']
     ph = ','.join('?' for _ in cats)
     since = time.time() - days * 86400
     order = 'LENGTH(content) DESC' if hour == 19 else 'likes DESC, created_at DESC'
