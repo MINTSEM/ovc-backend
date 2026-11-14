@@ -2742,18 +2742,109 @@ def api_web_search():
     } for it in items]})
 
 
+# ===== 文本分析（选词）辅助：检索词实体化 / 多轮检索 / 结果缓存 / 文章上下文缓存 =====
+_TEXT_ANALYSIS_CACHE = {}
+_TEXT_ANALYSIS_TTL = 1800
+_TEXT_ARTICLE_CACHE = {}
+_TEXT_ARTICLE_TTL = 300
+_TEXT_PRONOUN_PREFIX = ("他", "她", "它", "其", "该", "此", "这", "那", "上述", "前述", "对方", "其中", "后者", "前者")
+
+
+def _text_cache_get(key):
+    import time as _t
+    it = _TEXT_ANALYSIS_CACHE.get(key)
+    if not it:
+        return None
+    if _t.time() - it[0] > _TEXT_ANALYSIS_TTL:
+        _TEXT_ANALYSIS_CACHE.pop(key, None)
+        return None
+    return it[1]
+
+
+def _text_cache_set(key, val):
+    import time as _t
+    if len(_TEXT_ANALYSIS_CACHE) > 300:
+        _TEXT_ANALYSIS_CACHE.clear()
+    _TEXT_ANALYSIS_CACHE[key] = (_t.time(), val)
+
+
+def _text_article_ctx(news_id):
+    """取新闻原文上下文（带 5 分钟进程内缓存，避免每次选词都重算相关报道）。"""
+    if not news_id:
+        return None
+    import time as _t
+    it = _TEXT_ARTICLE_CACHE.get(str(news_id))
+    if it and _t.time() - it[0] < _TEXT_ARTICLE_TTL:
+        return it[1]
+    try:
+        ctx = _agent_get_news_context(news_id)
+    except Exception:
+        ctx = None
+    if ctx:
+        _TEXT_ARTICLE_CACHE[str(news_id)] = (_t.time(), ctx)
+    return ctx
+
+
+def _text_build_queries(selected_text, article):
+    """生成检索词：实体化优先，遇代词/过短回落到新闻标题；最多两条。"""
+    st = re.sub(r"\s+", " ", (selected_text or "")).strip(" \u3000\"'\u201c\u201d\u2018\u2019\u300a\u300b()\uff08\uff09[]\u3010\u3011")
+    qs = []
+    if st:
+        qs.append(st[:40])
+    head = ""
+    if article:
+        head = re.sub(r"\s+", " ", (article.get("title") or "")).strip()
+    if head:
+        head = re.split(r"[\u4e28|\uff5c\-\u2014:\uff1a]", head)[0].strip() or head
+        head = head[:40]
+        if head and head not in qs:
+            qs.append(head)
+    # 代词开头或过短：标题提到首位（选区原文作备用词）
+    if st and qs and len(qs) > 1 and (len(st) <= 6 or st.startswith(_TEXT_PRONOUN_PREFIX)):
+        qs = [qs[1], qs[0]]
+    return qs[:2]
+
+
+def _text_search(queries, limit=4):
+    """按检索词顺序检索，命中不足 3 条则继续用下一条检索词补充。"""
+    import source_search
+    out, log = [], []
+    for q in queries:
+        if not q:
+            continue
+        try:
+            items = source_search.search_external(q, limit=limit) or []
+        except Exception:
+            items = []
+        log.append({"query": q, "hits": len(items)})
+        out.extend(items)
+        if len(out) >= 3:
+            break
+    seen, uniq = set(), []
+    for it in out:
+        k = (it.get("url") or "") + "|" + (it.get("title") or "")
+        if k in seen:
+            continue
+        seen.add(k)
+        uniq.append(it)
+    return uniq, log
+
+
 @app.route('/api/text-analysis', methods=['POST'])
 def api_text_analysis():
-    """文本选中悬浮菜单统一端点。
+    """选词分析：选中文本 + 所在上下文 + （可选）新闻原文与同题旁证 + 外部检索 → markdown 结论。
 
-    参数：mode ∈ {explain, viewpoint, verify, evaluate}；
-          selected_text 选中文本；context 选区所在上下文。
-    每次调用都结合外部新闻源实时搜索（国外源站内检索层），返回 markdown 文本。
+    请求体：{mode, selected_text, context, news_id?, viewpoint_id?, force?}
+    mode ∈ explain | viewpoint | verify | evaluate
+    返回：{mode, result, external[{eid,title,source,url,date,used}], related[...], query[], ms, cached}
     """
     payload = request.get_json(silent=True) or {}
     mode = (payload.get("mode") or "explain").strip()
     selected_text = (payload.get("selected_text") or "").strip()
     context = (payload.get("context") or "").strip()
+    news_id = str(payload.get("news_id") or "").strip()
+    viewpoint_id = (payload.get("viewpoint_id") or "").strip()
+    force = bool(payload.get("force"))
     if not selected_text:
         return jsonify({"error": "缺少选中文本"}), 400
     if len(selected_text) > 2000:
@@ -2763,14 +2854,43 @@ def api_text_analysis():
     if mode not in ("explain", "viewpoint", "verify", "evaluate"):
         return jsonify({"error": "未知模式"}), 400
 
-    # 外部实时搜索：以选中文本提炼关键词检索国外新闻源
-    ext_items = []
-    try:
-        import source_search
-        query = selected_text[:60].replace("\n", " ")
-        ext_items = source_search.search_external(query, limit=4) or []
-    except Exception:
-        ext_items = []
+    import hashlib
+    import time as _t
+    t0 = _t.time()
+    ck = hashlib.sha1(("%s|%s|%s|%s|%s" % (news_id, selected_text, mode, context, viewpoint_id)).encode("utf-8")).hexdigest()
+    if not force:
+        _hit = _text_cache_get(ck)
+        if _hit:
+            _out = dict(_hit)
+            _out["cached"] = True
+            return jsonify(_out)
+
+    # 1) 新闻原文上下文（标题/来源/摘要/正文 + 同题近期旁证 R* + 历史背景 H*）
+    article = _text_article_ctx(news_id)
+    art_block = ""
+    related_out = []
+    if article:
+        lines = ["新闻标题：%s" % (article.get("title") or "")]
+        if article.get("source"):
+            lines.append("来源媒体：%s" % article["source"])
+        if article.get("summary"):
+            lines.append("摘要：%s" % article["summary"][:400])
+        if article.get("content"):
+            lines.append("正文（截断，供判断上下文与指代）：%s" % article["content"][:1500])
+        for i, it in enumerate((article.get("recent_related") or [])[:3], 1):
+            lines.append("R%d. %s（%s）%s" % (i, (it.get("title") or "").strip(), (it.get("source") or "").strip(), (it.get("summary") or "")[:160]))
+            related_out.append({"rid": "R%d" % i, "title": (it.get("title") or "").strip(),
+                                "source": (it.get("source") or "").strip(), "kind": "recent"})
+        for i, it in enumerate((article.get("historical_related") or [])[:2], 1):
+            lines.append("H%d. %s（%s）%s" % (i, (it.get("title") or "").strip(), (it.get("source") or "").strip(), (it.get("summary") or "")[:160]))
+            related_out.append({"rid": "H%d" % i, "title": (it.get("title") or "").strip(),
+                                "source": (it.get("source") or "").strip(), "kind": "history"})
+        art_block = "\n\n新闻原文与同题旁证（R*=近 7 天多信源报道，H*=更早的背景报道）：\n" + "\n".join(lines)
+
+    # 2) 外部检索（检索词实体化，命中不足再补一条检索词）
+    queries = _text_build_queries(selected_text, article)
+    ext_items, query_log = _text_search(queries, limit=4)
+
     ext_lines = []
     for i, r in enumerate(ext_items, 1):
         src_txt = ("【%s】" % (r.get("source_name") or r.get("source") or "")) if (r.get("source_name") or r.get("source")) else ""
@@ -2779,63 +2899,77 @@ def api_text_analysis():
         if len(desc) > 260:
             desc = desc[:260] + "…"
         ext_lines.append("E%d. %s%s%s%s" % (i, src_txt, r.get("title") or "", date_txt, (" —— " + desc) if desc else ""))
-    ext_block = ("\n外部实时搜索结果（国外新闻源站内检索，编号 E1-En，仅作参考，须批判性使用）：\n" + "\n".join(ext_lines)) if ext_lines else "\n（外部实时搜索未返回结果，请基于选中文本与上下文作答，并明确说明信息局限。）"
+    if ext_lines:
+        ext_block = ("\n\n外部检索结果（中英文新闻源站内检索，编号 E1-E%d，仅作参考，须批判性使用）：\n" % len(ext_lines)) + "\n".join(ext_lines)
+    else:
+        ext_block = "\n\n（外部实时检索未返回结果：请基于选中文本、上下文与新闻原文作答，并明确说明信息局限，禁止编造来源。）"
+
+    # 3) 视角立场继承（正文已选分析视角时，选词分析延续同一立场）
+    stance_block = ""
+    if mode == "viewpoint" and viewpoint_id:
+        try:
+            vp = _AGENT_VIEWPOINT_MAP.get(viewpoint_id) or {}
+        except Exception:
+            vp = {}
+        if vp:
+            stance_block = ("\n\n本段须沿用该新闻当前已选的分析视角「%s」：立场=%s；关注=%s；方法=%s。\n"
+                            % (vp.get("name") or viewpoint_id,
+                               vp.get("stance") or "",
+                               "、".join(vp.get("attention") or []),
+                               vp.get("method") or ""))
 
     mode_prompts = {
-        "explain": (
-            "你是一位严谨的新闻词条解释者。请解释选中文本在给定上下文中的含义："
-            "它指代什么人物/组织/事件/时段/术语，结合上下文语境说明其背景与前因后果。"
-            "输出 markdown，结构：**指代对象**、**语境解读**、**背景与来龙去脉**、**关联事件时间线**（如有）。"
-            "不确定处明确标注「存疑」，禁止编造事实。"
-        ),
-        "viewpoint": (
-            "你是一位媒体语言与立场分析专家。请剖析这段文本的用词、修辞与叙述框架所体现的媒体立场与倾向："
-            "主语选择、情感色彩词、归因方式、被省略的信息、隐含的价值预设。"
-            "输出 markdown，结构：**用词观察**、**叙述框架**、**隐含立场**、**被省略的信息**、**更中立的表述建议**。"
-            "要求犀利、具体，直接引用文本词句佐证。"
-        ),
-        "verify": (
-            "你是一位事实核查员。请结合外部实时搜索结果判断这段文本所述内容是否可信："
-            "哪些陈述被多源印证、哪些为单源独家、哪些与外部检索结果冲突或无法核实。"
-            "输出 markdown，结构：**结论**（可信/部分可信/存疑/不实）、**交叉印证情况**（引用 E 编号）、"
-            "**矛盾与缺口**、**建议核实渠道**。禁止仅凭外部结果不全就断言不实。"
-        ),
-        "evaluate": (
-            "你是一位新闻价值评论员。请把这段文本描述的行为当作既定事实，做价值评价："
-            "行为主体、行为性质、受益与受损方、是否符合公序良俗/制度规则/长远利益，以及值得肯定的点与应当批评的点。"
-            "输出 markdown，结构：**行为定性**、**价值分析**、**支持的理由**、**反对/保留的理由**、**综合评价**。"
-            "要求立场鲜明、逻辑自洽，同时区分事实判断与价值判断。"
-        ),
+        "explain": ("你是一位严谨的新闻词条解释者。请解释选中文本在给定上下文中的含义：\n\n它指代什么人物/组织/事件/时段/术语，结合上下文语境说明其背景与前因后果。\n输出 markdown，结构：**指代对象**、**语境解读**、**背景与来龙去脉**、**关联事件时间线**（如有）。\n不确定处明确标注「存疑」，禁止编造事实。\n"),
+        "viewpoint": ("你是一位媒体语言与立场分析专家。请剖析这段文本的用词、修辞与叙述框架所体现的媒体立场与倾向：\n\n主语选择、情感色彩词、归因方式、被省略的信息、隐含的价值预设。\n\n输出 markdown，结构：**用词观察**、**叙述框架**、**隐含立场**、**被省略的信息**、**更中立的表述建议**。\n\n要求犀利、具体，直接引用文本词句佐证。\n"),
+        "verify": ("你是一位事实核查员。请结合外部实时检索结果判断这段文本所述内容是否可信：\n\n哪些陈述被多源印证、哪些为单源独家、哪些与外部检索结果冲突或无法核实。\n\n输出 markdown，结构：**结论**（可信/部分可信/存疑/不实）、**交叉印证情况**（引用 E/R 编号）、\n\n**矛盾与缺口**、**建议核实渠道**。禁止仅凭外部结果不全就断言不实。\n"),
+        "evaluate": ("你是一位新闻价值评论员。请把这段文本描述的行为当作既定事实，做价值评价：\n\n行为主体、行为性质、受益与受损方、是否符合公序良俗/制度规则/长远利益，以及值得肯定的点与应当批评的点。\n\n输出 markdown，结构：**行为定性**、**价值分析**、**支持的理由**、**反对/保留的理由**、**综合评价**。\n\n要求立场鲜明、逻辑自洽，同时区分事实判断与价值判断。\n"),
     }
-
-    sys_prompt = (
-        "你是东广视新闻平台的文本分析助手。只输出 markdown 正文，禁止输出思考过程或多余说明。\n"
-        + mode_prompts[mode]
-    )
-    user_parts = [
-        "选中文本：\n%s" % selected_text,
-    ]
+    sys_prompt = ("你是东广视新闻平台的文本分析助手。只输出 markdown 正文，禁止输出思考过程或多余说明。\n\n" + mode_prompts[mode])
+    cite_rule = ("\n\n证据与引用要求：\n"
+                 "1) 凡依据外部检索结果作出的论断，须在其后紧跟编号引用，如 [E2]；\n"
+                 "2) 依据同题旁证写 [R1]，依据历史背景写 [H1]；\n"
+                 "3) 无证据支撑的判断必须直书「未经外部核实」，不得冒充有据；\n"
+                 "4) 只允许使用上文已给出的编号，严禁自造编号或来源。\n")
+    user_parts = ["选中文本：\n%s" % selected_text]
     if context:
-        user_parts.append("所在上下文（供理解指代与语境）：\n%s" % context)
-    user_parts.append(ext_block)
+        user_parts.append("选中文本所在上下文（供理解指代与语境）：\n%s" % context)
+    if art_block:
+        user_parts.append(art_block.strip())
+    user_parts.append(ext_block.strip())
+    user_parts.append(cite_rule.strip())
     user_parts.append("请现在输出 markdown 分析结果。")
+    if stance_block:
+        user_parts.insert(2, stance_block.strip())
     try:
         raw = call_lm_studio([
             {"role": "system", "content": sys_prompt},
             {"role": "user", "content": "\n\n".join(user_parts)},
-        ], timeout=120, max_tokens=2048)
+        ], timeout=150, max_tokens=2048)
     except Exception as e:
         return jsonify({"error": "AI 分析失败：%s" % str(e)}), 502
-    return jsonify({
+
+    used_eids = set((("E%s" % x) for x in re.findall(r"\[E(\d+)\]", raw)))
+    used_rids = set(re.findall(r"\[(R\d+|H\d+)\]", raw))
+    out = {
         "mode": mode,
         "result": raw,
         "external": [{
+            "eid": "E%d" % (i + 1),
             "title": r.get("title") or "",
             "source": r.get("source_name") or r.get("source") or "",
             "url": r.get("url") or "",
             "date": r.get("date") or "",
-        } for r in ext_items],
-    })
+            "used": ("E%d" % (i + 1)) in used_eids,
+        } for i, r in enumerate(ext_items)],
+        "related": [dict(x, used=(x.get("rid") in used_rids)) for x in related_out],
+        "query": query_log,
+        "ms": int((_t.time() - t0) * 1000),
+        "cached": False,
+    }
+    if not ext_items:
+        out["degraded"] = 1
+    _text_cache_set(ck, out)
+    return jsonify(out)
 
 
 @app.route('/admin')
@@ -15624,11 +15758,33 @@ _DIGEST_CACHE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'di
 # 缓存跨天复用窗口（天）：当天无缓存时回退到该窗口内最新的同名时段缓存
 _DIGEST_CACHE_LOOKBACK_DAYS = 3
 
+# 速览统一按北京时间（UTC+8）计算日期与时段，不依赖容器本地时区（线上容器为 UTC）
+try:
+    from datetime import timezone as _dt_tz
+    _DIGEST_TZ = _dt_tz(timedelta(hours=8))
+except Exception:
+    _DIGEST_TZ = None
+
+
+def _digest_now():
+    """当前北京时间 datetime（不依赖容器 TZ）。"""
+    return datetime.now(_DIGEST_TZ) if _DIGEST_TZ is not None else datetime.now()
+
+
+def _digest_today_str():
+    """北京时间的当天日期串 YYYYMMDD。"""
+    return _digest_now().strftime('%Y%m%d')
+
+
+def _digest_hour_now():
+    """北京时间的当前小时。"""
+    return _digest_now().hour
+
 
 def _digest_cache_path(hour):
     """速览缓存文件路径：按日期/时段命名（digest_YYYYMMDD_HH.json），支持多时段共存。"""
     try:
-        day = time.strftime('%Y%m%d', time.localtime())
+        day = _digest_today_str()
     except Exception:
         day = 'unknown'
     return os.path.join(_DIGEST_CACHE_DIR, 'digest_%s_%02d.json' % (day, int(hour or 0)))
@@ -15653,23 +15809,23 @@ def _digest_read_cache(hour):
             return None
         pat = re.compile(r'^digest_(\d{8})_(\d{2})\.json$')
         best = None
-        today = time.strftime('%Y%m%d', time.localtime())
+        today = _digest_today_str()
         for fn in os.listdir(_DIGEST_CACHE_DIR):
             m = pat.match(fn)
             if not m or int(m.group(2)) != int(hour or 0):
                 continue
             day = m.group(1)
-            if day > today:            # 忽略未来日期文件
-                continue
             try:
                 age = (time.mktime(time.strptime(today, '%Y%m%d')) -
                        time.mktime(time.strptime(day, '%Y%m%d'))) / 86400.0
             except Exception:
                 continue
-            if age > _DIGEST_CACHE_LOOKBACK_DAYS:
+            # 容忍未来日期文件（脚本与容器时区差异可能造成），窗口内按距离排序
+            if abs(age) > _DIGEST_CACHE_LOOKBACK_DAYS:
                 continue
-            if best is None or day > best[0]:
-                best = (day, os.path.join(_DIGEST_CACHE_DIR, fn))
+            rank = (abs(age), 0 if age >= 0 else 1)
+            if best is None or rank < best[0]:
+                best = (rank, os.path.join(_DIGEST_CACHE_DIR, fn))
         if not best:
             return None
         with open(best[1], 'r', encoding='utf-8') as f:
@@ -15710,6 +15866,16 @@ _DIGEST_HOUR_RULES = {
     19: {'label': '深度·社会观察速览', 'cats': ['社会']},
     20: {'label': '时政·产经国际速览', 'cats': ['时事', '国际', '经济']},
 }
+# 线上新闻实际分类：时事/财经/娱乐/科技/环境/体育/人文
+# 时段规则里沿用的旧分类名（经济/社会/生活/国际）需映射到真实分类，否则查不到新闻
+_DIGEST_CAT_ALIAS = {
+    '经济': '财经',
+    '社会': '时事',
+    '生活': '人文',
+    '国际': '时事',
+    '国际新闻': '时事',
+}
+
 # 19 点"国内媒体深度"排除的明显外媒源
 _DIGEST_FOREIGN_SRC_HINT = ('reuters', 'apnews', 'bbc', 'cnn', 'nytimes', 'wsj', 'ft.com', 'theguardian', 'aljazeera')
 
@@ -15746,10 +15912,10 @@ _SRC_ZH_MAP = {
 
 
 def _digest_date_prefix(ts):
-    """Unix 时间戳 → '10月20日 ' 日期前缀（速览标题要素之一）。"""
+    """Unix 时间戳 → '10月20日 ' 日期前缀（速览标题要素之一，按北京时间）。"""
     try:
-        t = time.localtime(ts)
-        return '%d月%d日 ' % (t.tm_mon, t.tm_mday)
+        t = datetime.fromtimestamp(float(ts), _DIGEST_TZ) if _DIGEST_TZ is not None else datetime.fromtimestamp(float(ts))
+        return '%d月%d日 ' % (t.month, t.day)
     except Exception:
         return ''
 
@@ -15863,11 +16029,17 @@ def _news_digest(db, limit=8, days=7, hour=None):
     每组取代表性信源标题作为重写后标题，摘要取组内最完整，来源合并展示。
     hour 为空时使用当前小时；无命中时段返回空列表。
     """
-    hour = int(time.strftime('%H', time.localtime())) if hour is None else int(hour)
+    hour = _digest_hour_now() if hour is None else int(hour)
     rule = _DIGEST_HOUR_RULES.get(hour)
     if not rule:
         return hour, '', []
-    cats = rule['cats']
+    cats = []
+    for _c in rule['cats']:
+        _cc = _DIGEST_CAT_ALIAS.get(_c, _c)
+        if _cc not in cats:
+            cats.append(_cc)
+    if not cats:
+        cats = ['时事']
     ph = ','.join('?' for _ in cats)
     since = time.time() - days * 86400
     order = 'LENGTH(content) DESC' if hour == 19 else 'likes DESC, created_at DESC'
@@ -16011,9 +16183,9 @@ def api_news_digest():
     db = get_db()
     try:
         hour_arg = request.args.get('hour')
-        hour = int(hour_arg) if str(hour_arg or '').strip().isdigit() else int(time.strftime('%H', time.localtime()))
+        hour = int(hour_arg) if str(hour_arg or '').strip().isdigit() else _digest_hour_now()
     except Exception:
-        hour = int(time.strftime('%H', time.localtime()))
+        hour = _digest_hour_now()
     cached = _digest_read_cache(hour)
     if cached and isinstance(cached.get('digest'), list):
         return jsonify({
@@ -16042,9 +16214,9 @@ def api_news_digest_write():
     db = get_db()
     try:
         hour_arg = request.args.get('hour') or (request.get_json(silent=True) or {}).get('hour')
-        hour = int(hour_arg) if str(hour_arg or '').strip().isdigit() else int(time.strftime('%H', time.localtime()))
+        hour = int(hour_arg) if str(hour_arg or '').strip().isdigit() else _digest_hour_now()
     except Exception:
-        hour = int(time.strftime('%H', time.localtime()))
+        hour = _digest_hour_now()
     try:
         hour_r, label, items = _news_digest(db, hour=hour)
         path = _digest_write_cache(hour_r, label, items)
