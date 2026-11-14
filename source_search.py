@@ -334,28 +334,35 @@ def search_external(query, sources=None, source_filter=None, limit=8):
         keys = sources or ["netease163", "zaobao", "guancha", "france24",
                            "sixthtone", "bing"]
 
-    results = []
-    for key in keys:
+    def _fetch_one(key):
         try:
             if key == "netease163":
-                items = search_netease163(query, limit)
-            elif key == "zaobao":
-                items = search_zaobao(query, limit)
-            elif key == "guancha":
-                items = search_guancha(query, limit)
-            elif key == "france24":
-                items = search_france24(query, limit)
-            elif key == "sixthtone":
-                items = search_sixthtone(query, limit)
-            elif key == "bing":
-                items = search_bing_fallback(query, None, limit)
-            elif key in FOREIGN_DOMAINS:
-                items = search_bing_fallback(query, key, limit)
-            else:
-                items = []
-            results.extend(items or [])
+                return search_netease163(query, limit) or []
+            if key == "zaobao":
+                return search_zaobao(query, limit) or []
+            if key == "guancha":
+                return search_guancha(query, limit) or []
+            if key == "france24":
+                return search_france24(query, limit) or []
+            if key == "sixthtone":
+                return search_sixthtone(query, limit) or []
+            if key == "bing":
+                return search_bing_fallback(query, None, limit) or []
+            if key in FOREIGN_DOMAINS:
+                return search_bing_fallback(query, key, limit) or []
+            return []
         except Exception:
-            continue
+            return []
+
+    results = []
+    try:
+        from concurrent.futures import ThreadPoolExecutor
+        with ThreadPoolExecutor(max_workers=max(1, min(6, len(keys)))) as _ex:
+            for _items in _ex.map(_fetch_one, keys):
+                results.extend(_items)
+    except Exception:
+        for _key in keys:
+            results.extend(_fetch_one(_key))
     results = _dedup(results)
     results = _rank(query, results)
     # 控制噪音：关键词命中（title/desc）全部保留；未命中的每源最多留 1 条作"该源最近报道"参考
